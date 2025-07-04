@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h1 class="h4 mb-0">Bienvenue dans le système de gestion</h1>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Vous êtes connecté en tant que <strong>{{ app.user.email }}</strong>
+                    </div>
+                    
+                    <p class="lead">Vous avez accès aux fonctionnalités utilisateur standard.</p>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-user-circle fa-3x mb-3 text-primary"></i>
+                                    <h5 class="card-title">Mon profil</h5>
+                                    <p class="card-text">Consultez et modifiez vos informations personnelles</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-cog fa-3x mb-3 text-primary"></i>
+                                    <h5 class="card-title">Paramètres</h5>
+                                    <p class="card-text">Configurez vos préférences système</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{{ path('app_logout') }}" class="btn btn-outline-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i> Déconnexion
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

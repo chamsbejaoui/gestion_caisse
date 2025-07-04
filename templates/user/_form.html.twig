@@ -1,0 +1,31 @@
+{{ form_start(form) }}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Informations utilisateur</h5>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                {{ form_label(form.email, 'Adresse email', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.email) }}
+            </div>
+            
+            <div class="mb-3">
+                {{ form_label(form.roles, 'Rôles utilisateur', {'label_attr': {'class': 'form-label'}}) }}
+                <div class="d-flex flex-wrap gap-3">
+                    {{ form_widget(form.roles) }}
+                </div>
+                {{ form_errors(form.roles) }}
+            </div>
+            
+            <div class="mb-3">
+                {{ form_label(form.plainPassword, 'Mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.plainPassword, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.plainPassword) }}
+            </div>
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+        </div>
+    </div>
+{{ form_end(form) }}
