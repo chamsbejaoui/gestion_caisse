@@ -33,6 +33,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     private ?string $plainPassword = null;
+     #[ORM\Column(type: 'boolean')]
+    private bool $isVerified = false;
+
+    // --- Getters et setters pour isVerified ---
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): self
+    {
+        $this->isVerified = $isVerified;
+        return $this;
+    }
 
     public function getPlainPassword(): ?string
     {

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmation de votre compte</title>
+    <style>
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 0 0 5px 5px;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>Confirmation de votre compte</h1>
+        </div>
+        <div class="content">
+            <p>Bonjour,</p>
+            <p>Merci de vous être inscrit ! Pour activer votre compte, veuillez cliquer sur le bouton ci-dessous :</p>
+            <p style="text-align: center;">
+                <a href="{{ signedUrl }}" class="button">Confirmer mon compte</a>
+            </p>
+            <p>Ce lien expirera dans 1 heure.</p>
+            <p>Si vous n'avez pas créé de compte, vous pouvez ignorer cet email.</p>
+            <p>Cordialement,<br>L'équipe</p>
+        </div>
+    </div>
+</body>
+</html>
