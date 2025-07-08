@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fd8eddd28d62016d70fe2c732ae03be0",
+    "content-hash": "b3d98fa3f193bf038d52ef41bacfd98d",
     "packages": [
         {
             "name": "composer/semver",
@@ -1372,6 +1372,88 @@
             "time": "2025-03-06T22:45:56+00:00"
         },
         {
+            "name": "karser/karser-recaptcha3-bundle",
+            "version": "v0.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/karser/KarserRecaptcha3Bundle.git",
+                "reference": "1a2f3694d23caed9de76a770352065e0cc7df83a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/karser/KarserRecaptcha3Bundle/zipball/1a2f3694d23caed9de76a770352065e0cc7df83a",
+                "reference": "1a2f3694d23caed9de76a770352065e0cc7df83a",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": ">=7.4",
+                "symfony/expression-language": "^3.4|^4.0|^5.0|^6.0|^7.0",
+                "symfony/form": "^3.4|^4.0|^5.0|^6.0|^7.0",
+                "symfony/framework-bundle": "^3.4.26|^4.2.7|^5.0|^6.0|^7.0",
+                "symfony/twig-bundle": "^3.4|^4.0|^5.0|^6.0|^7.0",
+                "symfony/validator": "^3.4|^4.0|^5.0|^6.0|^7.0",
+                "symfony/yaml": "^3.4|^4.0|^5.0|^6.0|^7.0",
+                "twig/twig": "^2.9|^3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7|^8|^9|^10",
+                "symfony/http-client": "^4.3|^5.0|^6.0|^7.0"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Karser\\Recaptcha3Bundle\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dmitrii Poddubnyi",
+                    "homepage": "https://github.com/karser"
+                }
+            ],
+            "description": "Google ReCAPTCHA v3 for Symfony",
+            "homepage": "http://github.com/karser/KarserRecaptcha3Bundle",
+            "keywords": [
+                "Forms",
+                "Google ReCaptcha",
+                "GoogleReCaptcha",
+                "Symfony Google ReCaptcha",
+                "anti-bot",
+                "anti-bots",
+                "anti-spam",
+                "captcha",
+                "contact",
+                "google",
+                "google recaptcha v3",
+                "no-captcha",
+                "recaptcha",
+                "recaptcha v3",
+                "recaptcha v3 symfony",
+                "security",
+                "spam",
+                "symfony",
+                "symfony google recaptcha v3",
+                "symfony recaptcha",
+                "symfony recaptcha v3",
+                "validation"
+            ],
+            "support": {
+                "issues": "https://github.com/karser/KarserRecaptcha3Bundle/issues",
+                "source": "https://github.com/karser/KarserRecaptcha3Bundle/tree/v0.2.1"
+            },
+            "time": "2025-03-03T11:11:30+00:00"
+        },
+        {
             "name": "monolog/monolog",
             "version": "3.9.0",
             "source": {
@@ -1695,6 +1777,65 @@
                 "source": "https://github.com/phpstan/phpdoc-parser/tree/2.1.0"
             },
             "time": "2025-02-19T13:28:12+00:00"
+        },
+        {
+            "name": "pixelopen/cloudflare-turnstile-bundle",
+            "version": "0.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Pixel-Open/cloudflare-turnstile-bundle.git",
+                "reference": "d000eb4b37c48f9421fb603742e7e23611204182"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Pixel-Open/cloudflare-turnstile-bundle/zipball/d000eb4b37c48f9421fb603742e7e23611204182",
+                "reference": "d000eb4b37c48f9421fb603742e7e23611204182",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4",
+                "symfony/form": "^5.0|^6.0|^7.0",
+                "symfony/framework-bundle": "^5.0|^6.0|^7.0",
+                "symfony/http-client": "^5.0|^6.0|^7.0",
+                "symfony/twig-bundle": "^5.0|^6.0|^7.0",
+                "symfony/validator": "^5.0|^6.0|^7.0",
+                "symfony/yaml": "^5.0|^6.0|^7.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1.8",
+                "phpstan/phpstan-symfony": "^1.2",
+                "phpunit/phpunit": "^9.6",
+                "rector/rector": "^0.14.5",
+                "symplify/easy-coding-standard": "^11.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PixelOpen\\CloudflareTurnstileBundle\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Pixel Open Team",
+                    "homepage": "https://pixel-open.org/projects/symfony-bundle-cloudflare-turnstile/"
+                }
+            ],
+            "description": "A simple package to help integrate Cloudflare Turnstile on Symfony.",
+            "keywords": [
+                "Symfony Bundle",
+                "captcha",
+                "cloudflare-turnstile",
+                "form security"
+            ],
+            "support": {
+                "issues": "https://github.com/Pixel-Open/cloudflare-turnstile-bundle/issues",
+                "source": "https://github.com/Pixel-Open/cloudflare-turnstile-bundle/tree/0.4.1"
+            },
+            "time": "2024-09-30T15:42:13+00:00"
         },
         {
             "name": "psr/cache",
@@ -7449,6 +7590,54 @@
                 }
             ],
             "time": "2025-06-03T06:57:57+00:00"
+        },
+        {
+            "name": "symfonycasts/reset-password-bundle",
+            "version": "v1.23.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SymfonyCasts/reset-password-bundle.git",
+                "reference": "bde42fe5956e0cd523931da886ee41ab660c45b2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SymfonyCasts/reset-password-bundle/zipball/bde42fe5956e0cd523931da886ee41ab660c45b2",
+                "reference": "bde42fe5956e0cd523931da886ee41ab660c45b2",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": ">=8.1.10",
+                "symfony/config": "^5.4 | ^6.0 | ^7.0",
+                "symfony/dependency-injection": "^5.4 | ^6.0 | ^7.0",
+                "symfony/deprecation-contracts": "^2.2 | ^3.0",
+                "symfony/http-kernel": "^5.4 | ^6.0 | ^7.0"
+            },
+            "require-dev": {
+                "doctrine/annotations": "^1.0",
+                "doctrine/doctrine-bundle": "^2.8",
+                "doctrine/orm": "^2.13",
+                "symfony/framework-bundle": "^5.4 | ^6.0 | ^7.0",
+                "symfony/phpunit-bridge": "^5.4 | ^6.0 | ^7.0",
+                "symfony/process": "^6.4 | ^7.0 | ^7.1",
+                "symfonycasts/internal-test-helpers": "dev-main"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "SymfonyCasts\\Bundle\\ResetPassword\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Symfony bundle that adds password reset functionality.",
+            "support": {
+                "issues": "https://github.com/SymfonyCasts/reset-password-bundle/issues",
+                "source": "https://github.com/SymfonyCasts/reset-password-bundle/tree/v1.23.1"
+            },
+            "time": "2024-12-09T19:04:36+00:00"
         },
         {
             "name": "symfonycasts/verify-email-bundle",

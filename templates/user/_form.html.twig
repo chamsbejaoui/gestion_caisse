@@ -1,31 +1,50 @@
 {{ form_start(form) }}
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5 class="mb-0">Informations utilisateur</h5>
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <div class="mb-4">
+            <label class="form-label fw-bold">
+                <i class="fas fa-envelope me-2 text-primary"></i>Adresse email
+            </label>
+            {{ form_widget(form.email, {
+                'attr': {
+                    'class': 'form-control form-control-lg',
+                    'placeholder': 'Entrez l\'adresse email'
+                }
+            }) }}
+            {{ form_errors(form.email) }}
         </div>
-        <div class="card-body">
-            <div class="mb-3">
-                {{ form_label(form.email, 'Adresse email', {'label_attr': {'class': 'form-label'}}) }}
-                {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(form.email) }}
+        
+        <div class="mb-4">
+            <label class="form-label fw-bold">
+                <i class="fas fa-user-tag me-2 text-primary"></i>Rôles utilisateur
+            </label>
+            <div class="d-flex flex-wrap gap-3">
+                {{ form_widget(form.roles, {
+                    'attr': {
+                        'class': 'form-check-input me-2'
+                    }
+                }) }}
             </div>
-            
-            <div class="mb-3">
-                {{ form_label(form.roles, 'Rôles utilisateur', {'label_attr': {'class': 'form-label'}}) }}
-                <div class="d-flex flex-wrap gap-3">
-                    {{ form_widget(form.roles) }}
-                </div>
-                {{ form_errors(form.roles) }}
-            </div>
-            
-            <div class="mb-3">
-                {{ form_label(form.plainPassword, 'Mot de passe', {'label_attr': {'class': 'form-label'}}) }}
-                {{ form_widget(form.plainPassword, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(form.plainPassword) }}
-            </div>
+            {{ form_errors(form.roles) }}
         </div>
-        <div class="card-footer">
-            <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+        
+        <div class="mb-4">
+            <label class="form-label fw-bold">
+                <i class="fas fa-key me-2 text-primary"></i>Mot de passe
+            </label>
+            {{ form_widget(form.plainPassword, {
+                'attr': {
+                    'class': 'form-control form-control-lg',
+                    'placeholder': 'Entrez le mot de passe'
+                }
+            }) }}
+            {{ form_errors(form.plainPassword) }}
         </div>
     </div>
+    <div class="card-footer bg-light text-end py-3">
+        <button type="submit" class="btn btn-primary btn-lg">
+            <i class="fas fa-save me-2"></i>{{ button_label|default('Enregistrer') }}
+        </button>
+    </div>
+</div>
 {{ form_end(form) }}

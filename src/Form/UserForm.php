@@ -7,6 +7,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+
 class UserForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -19,15 +21,17 @@ class UserForm extends AbstractType
                     'Administrateur' => 'ROLE_ADMIN'
                 ],
                 'multiple' => true,
-                'expanded' => true, // Affichage sous forme de cases à cocher
+                'expanded' => true,
                 'label' => 'Rôles'
             ])
-
             ->add('plainPassword', null, [
                 'mapped' => false,
                 'required' => false,
                 'label' => 'Mot de passe',
                 'help' => 'Laissez vide pour conserver le mot de passe actuel'
+            ])
+            ->add('cf_turnstile', HiddenType::class, [
+                'mapped' => false,
             ])
         ;
     }
