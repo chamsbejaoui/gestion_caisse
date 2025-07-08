@@ -1,11 +1,44 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Password Reset Email Sent{% endblock %}
+{% block title %}Email de réinitialisation envoyé{% endblock %}
 
 {% block body %}
-    <p>
-        If an account matching your email exists, then an email was just sent that contains a link that you can use to reset your password.
-        This link will expire in {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
-    </p>
-    <p>If you don't receive an email please check your spam folder or <a href="{{ path('app_forgot_password_request') }}">try again</a>.</p>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-primary text-white py-3">
+                    <h1 class="h4 mb-0"><i class="fas fa-envelope me-2"></i>Email envoyé</h1>
+                </div>
+
+                <div class="card-body p-4 text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-paper-plane fa-4x text-primary mb-3"></i>
+                        <h2 class="h5 mb-4">Vérifiez votre boîte de réception</h2>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <p class="mb-0">
+                            Si un compte correspond à votre adresse email, vous recevrez un message contenant un lien pour réinitialiser votre mot de passe.
+                            <br><br>
+                            <strong>Ce lien expirera dans {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.</strong>
+                        </p>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Si vous ne recevez pas d'email, vérifiez votre dossier spam ou
+                        <a href="{{ path('app_forgot_password_request') }}" class="alert-link">réessayez</a>.
+                    </div>
+                </div>
+
+                <div class="card-footer bg-light text-center py-3">
+                    <a href="{{ path('app_login') }}" class="btn btn-primary">
+                        <i class="fas fa-arrow-left me-2"></i>Retour à la connexion
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -1,12 +1,54 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Reset your password{% endblock %}
+{% block title %}Nouveau mot de passe{% endblock %}
 
 {% block body %}
-    <h1>Reset your password</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-primary text-white py-3">
+                    <h1 class="h4 mb-0"><i class="fas fa-lock me-2"></i>Définir un nouveau mot de passe</h1>
+                </div>
 
-    {{ form_start(resetForm) }}
-        {{ form_row(resetForm.plainPassword) }}
-        <button class="btn btn-primary">Reset password</button>
-    {{ form_end(resetForm) }}
+                <div class="card-body p-4">
+                    <div class="alert alert-info d-flex align-items-center mb-4">
+                        <i class="fas fa-info-circle me-3 fa-lg"></i>
+                        <div>
+                            <h5 class="alert-heading mb-1">Choisissez un nouveau mot de passe</h5>
+                            <p class="mb-0">Votre mot de passe doit être sécurisé et différent de l'ancien.</p>
+                        </div>
+                    </div>
+
+                    {{ form_start(resetForm, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                        <div class="mb-4">
+                            {{ form_label(resetForm.plainPassword, 'Nouveau mot de passe', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                            <div class="input-group">
+                                <span class="input-group-text bg-light">
+                                    <i class="fas fa-key text-primary"></i>
+                                </span>
+                                {{ form_widget(resetForm.plainPassword, {
+                                    'attr': {
+                                        'class': 'form-control form-control-lg',
+                                        'placeholder': 'Entrez votre nouveau mot de passe'
+                                    }
+                                }) }}
+                            </div>
+                            {{ form_errors(resetForm.plainPassword) }}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-check-circle me-2"></i>Confirmer le nouveau mot de passe
+                            </button>
+                            <a href="{{ path('app_login') }}" class="btn btn-light btn-lg">
+                                <i class="fas fa-times-circle me-2"></i>Annuler
+                            </a>
+                        </div>
+                    {{ form_end(resetForm) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
