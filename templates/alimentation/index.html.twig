@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Alimentation index{% endblock %}
+
+{% block body %}
+    <h1>Alimentation index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Montant</th>
+                <th>Source</th>
+                <th>DateAction</th>
+                <th>CreatedAt</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for alimentation in alimentations %}
+            <tr>
+                <td>{{ alimentation.id }}</td>
+                <td>{{ alimentation.montant }}</td>
+                <td>{{ alimentation.source }}</td>
+                <td>{{ alimentation.dateAction ? alimentation.dateAction|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ alimentation.createdAt ? alimentation.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_alimentation_show', {'id': alimentation.id}) }}">show</a>
+                    <a href="{{ path('app_alimentation_edit', {'id': alimentation.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_alimentation_new') }}">Create new</a>
+{% endblock %}

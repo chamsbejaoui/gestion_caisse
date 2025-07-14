@@ -13,6 +13,7 @@
                 <th>Description</th>
                 <th>DateAction</th>
                 <th>CreatedAt</th>
+                <th>Utilisateur</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -24,6 +25,8 @@
                 <td>{{ depense.description }}</td>
                 <td>{{ depense.dateAction ? depense.dateAction|date('Y-m-d H:i:s') : '' }}</td>
                 <td>{{ depense.createdAt ? depense.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ depense.user ? depense.user.email : '—' }}</td> {# ✅ affichage de l'utilisateur #}
+
                 <td>
                     <a href="{{ path('app_depense_show', {'id': depense.id}) }}">show</a>
                     <a href="{{ path('app_depense_edit', {'id': depense.id}) }}">edit</a>

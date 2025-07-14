@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\DepenseRepository;
+use App\Repository\AlimentationRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: DepenseRepository::class)]
-class Depense
+#[ORM\Entity(repositoryClass: AlimentationRepository::class)]
+class Alimentation
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -17,7 +17,7 @@ class Depense
     private ?float $montant = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $description = null;
+    private ?string $source = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $dateAction = null;
@@ -28,10 +28,6 @@ class Depense
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?user $user = null;
-
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Categorie $Categorie = null;
 
     public function getId(): ?int
     {
@@ -50,14 +46,14 @@ class Depense
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getSource(): ?string
     {
-        return $this->description;
+        return $this->source;
     }
 
-    public function setDescription(string $description): static
+    public function setSource(string $source): static
     {
-        $this->description = $description;
+        $this->source = $source;
 
         return $this;
     }
@@ -94,18 +90,6 @@ class Depense
     public function setUser(?user $user): static
     {
         $this->user = $user;
-
-        return $this;
-    }
-
-    public function getCategorie(): ?Categorie
-    {
-        return $this->Categorie;
-    }
-
-    public function setCategorie(?Categorie $Categorie): static
-    {
-        $this->Categorie = $Categorie;
 
         return $this;
     }

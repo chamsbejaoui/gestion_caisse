@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Depense;
-use App\Form\DepenseForm;
+use App\Form\DepenseType;
 use App\Repository\DepenseRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,24 +23,29 @@ final class DepenseController extends AbstractController
     }
 
     #[Route('/new', name: 'app_depense_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $depense = new Depense();
-        $form = $this->createForm(DepenseForm::class, $depense);
-        $form->handleRequest($request);
+public function new(Request $request, EntityManagerInterface $entityManager): Response
+{
+    $depense = new Depense();
+    $form = $this->createForm(DepenseType::class, $depense);
+    $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($depense);
-            $entityManager->flush();
+    if ($form->isSubmitted() && $form->isValid()) {
+        // ✅ Ajout automatique des champs système
+        $depense->setCreatedAt(new \DateTimeImmutable());
+        $depense->setUser($this->getUser());
 
-            return $this->redirectToRoute('app_depense_index', [], Response::HTTP_SEE_OTHER);
-        }
+        $entityManager->persist($depense);
+        $entityManager->flush();
 
-        return $this->render('depense/new.html.twig', [
-            'depense' => $depense,
-            'form' => $form,
-        ]);
+        return $this->redirectToRoute('app_depense_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    return $this->render('depense/new.html.twig', [
+        'depense' => $depense,
+        'form' => $form,
+    ]);
+}
+
 
     #[Route('/{id}', name: 'app_depense_show', methods: ['GET'])]
     public function show(Depense $depense): Response
@@ -53,7 +58,7 @@ final class DepenseController extends AbstractController
     #[Route('/{id}/edit', name: 'app_depense_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Depense $depense, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(DepenseForm::class, $depense);
+        $form = $this->createForm(DepenseType::class, $depense);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

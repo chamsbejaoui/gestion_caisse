@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Alimentation{% endblock %}
+
+{% block body %}
+    <h1>Alimentation</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ alimentation.id }}</td>
+            </tr>
+            <tr>
+                <th>Montant</th>
+                <td>{{ alimentation.montant }}</td>
+            </tr>
+            <tr>
+                <th>Source</th>
+                <td>{{ alimentation.source }}</td>
+            </tr>
+            <tr>
+                <th>DateAction</th>
+                <td>{{ alimentation.dateAction ? alimentation.dateAction|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>CreatedAt</th>
+                <td>{{ alimentation.createdAt ? alimentation.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_alimentation_index') }}">back to list</a>
+
+    <a href="{{ path('app_alimentation_edit', {'id': alimentation.id}) }}">edit</a>
+
+    {{ include('alimentation/_delete_form.html.twig') }}
+{% endblock %}
