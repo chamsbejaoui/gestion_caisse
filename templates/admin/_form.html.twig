@@ -1,0 +1,70 @@
+{{ form_start(form) }}
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <div class="mb-4">
+            <label class="form-label fw-bold">
+                <i class="fas fa-envelope me-2 text-primary"></i> Adresse email
+            </label>
+            {{ form_widget(form.email, {
+                'attr': {
+                    'class': 'form-control form-control-lg',
+                    'placeholder': 'Entrez l\'adresse email'
+                }
+            }) }}
+            {{ form_errors(form.email) }}
+        </div>
+        
+        <div class="mb-4">
+            <label class="form-label fw-bold">
+                <i class="fas fa-user-tag me-2 text-primary"></i> Rôles utilisateur
+            </label>
+            <div class="border rounded p-3 bg-light">
+                <div class="d-flex flex-column gap-3">
+                    {% for role in form.roles %}
+                        <div class="form-check">
+                            {{ form_widget(role, {
+                                'attr': {
+                                    'class': 'form-check-input'
+                                }
+                            }) }}
+                            {{ form_label(role, null, {
+                                'label_attr': {
+                                    'class': 'form-check-label fw-medium ms-2'
+                                }
+                            }) }}
+                        </div>
+                    {% endfor %}
+                </div>
+                <small class="text-muted mt-2 d-block">
+                    <i class="fas fa-info-circle me-1"></i> Sélectionnez un ou plusieurs rôles pour l'utilisateur
+                </small>
+            </div>
+            <div class="form-text text-danger mt-2">
+                {{ form_errors(form.roles) }}
+            </div>
+        </div>
+        
+        <div class="mb-4">
+            <label class="form-label fw-bold">
+                <i class="fas fa-key me-2 text-primary"></i> Mot de passe
+            </label>
+            {{ form_widget(form.plainPassword, {
+                'attr': {
+                    'class': 'form-control form-control-lg',
+                    'placeholder': 'Entrez le mot de passe'
+                }
+            }) }}
+            <div class="form-text">
+                <i class="fas fa-info-circle me-1"></i> Laissez vide pour ne pas modifier le mot de passe
+            </div>
+            {{ form_errors(form.plainPassword) }}
+        </div>
+    </div>
+    
+    <div class="card-footer bg-light text-end py-3">
+        <button type="submit" class="btn btn-primary btn-lg">
+            <i class="fas fa-save me-2"></i> {{ button_label|default('Enregistrer') }}
+        </button>
+    </div>
+</div>
+{{ form_end(form) }}

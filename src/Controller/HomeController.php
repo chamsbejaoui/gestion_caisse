@@ -21,7 +21,7 @@ class HomeController extends AbstractController
         // Vérifier si l'utilisateur est un administrateur
         if ($this->isGranted('ROLE_ADMIN')) {
             // Rediriger vers la gestion des utilisateurs
-            return $this->redirectToRoute('app_user_index');
+            return $this->redirectToRoute('app_admin_index');
         }
         
         // Afficher la page d'accueil pour les utilisateurs normaux

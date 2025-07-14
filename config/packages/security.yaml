@@ -35,13 +35,13 @@ security:
     - { path: ^/login, roles: PUBLIC_ACCESS }
 
     # 👉 Autoriser uniquement cette route sans être connecté
-    - { path: ^/user/verify/email, roles: PUBLIC_ACCESS }
+    - { path: ^/admin/verify/email, roles: PUBLIC_ACCESS }
 
     # Autoriser accès public à toutes les URLs commençant par /reset-password
     - { path: ^/reset-password, roles: PUBLIC_ACCESS }
 
-    # 🔒 Tout le reste des routes /user exige ROLE_ADMIN
-    - { path: ^/user, roles: ROLE_ADMIN }
+    # 🔒 Tout le reste des routes /admin exige ROLE_ADMIN
+    - { path: ^/admin, roles: ROLE_ADMIN }
 
     # 👤 Toutes les autres pages du site accessibles aux utilisateurs connectés
     - { path: ^/, roles: ROLE_USER }

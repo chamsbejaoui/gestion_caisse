@@ -16,7 +16,7 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
-#[Route('/user', name: 'app_user_')]
+#[Route('/admin', name: 'app_admin_')]
 final class UserController extends AbstractController
 {
     public function __construct(
@@ -28,7 +28,7 @@ final class UserController extends AbstractController
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(UserRepository $userRepository): Response
     {
-        return $this->render('user/index.html.twig', [
+        return $this->render('admin/index.html.twig', [
             'users' => $userRepository->findAll(),
         ]);
     }
@@ -54,7 +54,7 @@ final class UserController extends AbstractController
 
             // Génération du lien de confirmation
             $signatureComponents = $this->verifyEmailHelper->generateSignature(
-                'app_user_verify_email',
+                'app_admin_verify_email',
                 $user->getId(),
                 $user->getEmail(),
                 ['id' => $user->getId()]
@@ -72,10 +72,10 @@ final class UserController extends AbstractController
 
             $this->addFlash('success', 'Un email de confirmation a été envoyé.');
 
-            return $this->redirectToRoute('app_user_index');
+            return $this->redirectToRoute('app_admin_index');
         }
 
-        return $this->render('user/new.html.twig', [
+        return $this->render('admin/new.html.twig', [
             'user' => $user,
             'form' => $form->createView(),
         ]);
@@ -89,16 +89,16 @@ final class UserController extends AbstractController
 
         if (!$user) {
             $this->addFlash('error', 'Utilisateur non trouvé.');
-            return $this->redirectToRoute('app_user_index');
+            return $this->redirectToRoute('app_admin_index');
         }
 
         if ($user->isVerified()) {
             $this->addFlash('warning', 'Cet utilisateur est déjà vérifié.');
-            return $this->redirectToRoute('app_user_index');
+            return $this->redirectToRoute('app_admin_index');
         }
 
         $signatureComponents = $this->verifyEmailHelper->generateSignature(
-            'app_user_verify_email',
+            'app_admin_verify_email',
             $user->getId(),
             $user->getEmail(),
             ['id' => $user->getId()]
@@ -115,7 +115,7 @@ final class UserController extends AbstractController
         $this->mailer->send($email);
 
         $this->addFlash('success', 'Un nouvel email de confirmation a été envoyé.');
-        return $this->redirectToRoute('app_user_index');
+        return $this->redirectToRoute('app_admin_index');
     }
 
     #[Route('/verify/email', name: 'verify_email', methods: ['GET'])]
@@ -124,7 +124,7 @@ final class UserController extends AbstractController
         $id = $request->get('id');
 
         if (!$id || !$user = $userRepository->find($id)) {
-            return $this->redirectToRoute('app_user_index');
+            return $this->redirectToRoute('app_admin_index');
         }
 
         try {
@@ -135,7 +135,7 @@ final class UserController extends AbstractController
             );
         } catch (VerifyEmailExceptionInterface $e) {
             $this->addFlash('verify_email_error', $e->getReason());
-            return $this->redirectToRoute('app_user_index');
+            return $this->redirectToRoute('app_admin_index');
         }
 
         $user->setIsVerified(true);
@@ -148,7 +148,7 @@ final class UserController extends AbstractController
     #[Route('/{id}', name: 'show', methods: ['GET'])]
     public function show(User $user): Response
     {
-        return $this->render('user/show.html.twig', [
+        return $this->render('admin/show.html.twig', [
             'user' => $user,
         ]);
     }
@@ -168,10 +168,10 @@ final class UserController extends AbstractController
 
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_user_index');
+            return $this->redirectToRoute('app_admin_index');
         }
 
-        return $this->render('user/edit.html.twig', [
+        return $this->render('admin/edit.html.twig', [
             'user' => $user,
             'form' => $form->createView(),
         ]);

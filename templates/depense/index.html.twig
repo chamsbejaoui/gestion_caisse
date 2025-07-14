@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Depense index{% endblock %}
+
+{% block body %}
+    <h1>Depense index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Montant</th>
+                <th>Description</th>
+                <th>DateAction</th>
+                <th>CreatedAt</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for depense in depenses %}
+            <tr>
+                <td>{{ depense.id }}</td>
+                <td>{{ depense.montant }}</td>
+                <td>{{ depense.description }}</td>
+                <td>{{ depense.dateAction ? depense.dateAction|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ depense.createdAt ? depense.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_depense_show', {'id': depense.id}) }}">show</a>
+                    <a href="{{ path('app_depense_edit', {'id': depense.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_depense_new') }}">Create new</a>
+{% endblock %}
