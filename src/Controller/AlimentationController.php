@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Alimentation;
 use App\Form\AlimentationForm;
 use App\Form\AlimentationType;
+use App\Form\AlimentationSearchType;
 use App\Repository\AlimentationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,13 +14,26 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/alimentation')]
-final class AlimentationController extends AbstractController
+final class AlimentationController extends AbstractBaseController
 {
     #[Route(name: 'app_alimentation_index', methods: ['GET'])]
-    public function index(AlimentationRepository $alimentationRepository): Response
+    public function index(Request $request, AlimentationRepository $alimentationRepository): Response
     {
+        $this->initialize();
+        $form = $this->createForm(AlimentationSearchType::class);
+        $form->handleRequest($request);
+
+        $alimentations = $alimentationRepository->findBySearchCriteria(
+            $form->get('montantMin')->getData(),
+            $form->get('montantMax')->getData(),
+            $form->get('description')->getData(),
+            $form->get('dateMin')->getData(),
+            $form->get('dateMax')->getData()
+        );
+
         return $this->render('alimentation/index.html.twig', [
-            'alimentations' => $alimentationRepository->findAll(),
+            'alimentations' => $alimentations,
+            'searchForm' => $form->createView(),
         ]);
     }
 

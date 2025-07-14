@@ -12,7 +12,33 @@
                 </a>
             </div>
 
-            <div class="card-body p-0">
+            <div class="card-body">
+                <div class="search-form mb-4">
+                    {{ form_start(searchForm) }}
+                    <div class="row g-3">
+                        <div class="col-md-2">
+                            {{ form_row(searchForm.montantMin) }}
+                        </div>
+                        <div class="col-md-2">
+                            {{ form_row(searchForm.montantMax) }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form_row(searchForm.description) }}
+                        </div>
+                        <div class="col-md-2">
+                            {{ form_row(searchForm.dateMin) }}
+                        </div>
+                        <div class="col-md-2">
+                            {{ form_row(searchForm.dateMax) }}
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {{ form_end(searchForm) }}
+                </div>
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
                         <thead class="bg-light">

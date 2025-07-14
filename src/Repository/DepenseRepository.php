@@ -16,6 +16,50 @@ class DepenseRepository extends ServiceEntityRepository
         parent::__construct($registry, Depense::class);
     }
 
+    public function calculateTotalAmount(): float
+    {
+        $result = $this->createQueryBuilder('d')
+            ->select('SUM(d.montant)')
+            ->getQuery()
+            ->getSingleScalarResult();
+        
+        return $result ?? 0.0;
+    }
+
+    public function findBySearchCriteria(?float $montantMin = null, ?float $montantMax = null, ?string $description = null, ?\DateTimeInterface $dateMin = null, ?\DateTimeInterface $dateMax = null): array
+    {
+        $qb = $this->createQueryBuilder('d');
+
+        if ($montantMin !== null) {
+            $qb->andWhere('d.montant >= :montantMin')
+               ->setParameter('montantMin', $montantMin);
+        }
+
+        if ($montantMax !== null) {
+            $qb->andWhere('d.montant <= :montantMax')
+               ->setParameter('montantMax', $montantMax);
+        }
+
+        if ($description !== null) {
+            $qb->andWhere('d.description LIKE :description')
+               ->setParameter('description', '%' . $description . '%');
+        }
+
+        if ($dateMin !== null) {
+            $qb->andWhere('d.dateAction >= :dateMin')
+               ->setParameter('dateMin', $dateMin);
+        }
+
+        if ($dateMax !== null) {
+            $qb->andWhere('d.dateAction <= :dateMax')
+               ->setParameter('dateMax', $dateMax);
+        }
+
+        return $qb->orderBy('d.dateAction', 'DESC')
+                  ->getQuery()
+                  ->getResult();
+    }
+
 //    /**
 //     * @return Depense[] Returns an array of Depense objects
 //     */

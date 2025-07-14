@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Depense;
 use App\Form\DepenseType;
+use App\Form\DepenseSearchType;
 use App\Repository\DepenseRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,13 +13,26 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/depense')]
-final class DepenseController extends AbstractController
+final class DepenseController extends AbstractBaseController
 {
     #[Route(name: 'app_depense_index', methods: ['GET'])]
-    public function index(DepenseRepository $depenseRepository): Response
+    public function index(Request $request, DepenseRepository $depenseRepository): Response
     {
+        $this->initialize();
+        $form = $this->createForm(DepenseSearchType::class);
+        $form->handleRequest($request);
+
+        $depenses = $depenseRepository->findBySearchCriteria(
+            $form->get('montantMin')->getData(),
+            $form->get('montantMax')->getData(),
+            $form->get('description')->getData(),
+            $form->get('dateMin')->getData(),
+            $form->get('dateMax')->getData()
+        );
+
         return $this->render('depense/index.html.twig', [
-            'depenses' => $depenseRepository->findAll(),
+            'depenses' => $depenses,
+            'searchForm' => $form->createView(),
         ]);
     }
 
@@ -30,7 +44,6 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
-        // ✅ Ajout automatique des champs système
         $depense->setCreatedAt(new \DateTimeImmutable());
         $depense->setUser($this->getUser());
 

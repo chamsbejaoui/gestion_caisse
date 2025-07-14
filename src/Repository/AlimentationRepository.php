@@ -16,6 +16,50 @@ class AlimentationRepository extends ServiceEntityRepository
         parent::__construct($registry, Alimentation::class);
     }
 
+    public function calculateTotalAmount(): float
+    {
+        $result = $this->createQueryBuilder('a')
+            ->select('SUM(a.montant)')
+            ->getQuery()
+            ->getSingleScalarResult();
+        
+        return $result ?? 0.0;
+    }
+
+    public function findBySearchCriteria(?float $montantMin = null, ?float $montantMax = null, ?string $description = null, ?\DateTimeInterface $dateMin = null, ?\DateTimeInterface $dateMax = null): array
+    {
+        $qb = $this->createQueryBuilder('a');
+
+        if ($montantMin !== null) {
+            $qb->andWhere('a.montant >= :montantMin')
+               ->setParameter('montantMin', $montantMin);
+        }
+
+        if ($montantMax !== null) {
+            $qb->andWhere('a.montant <= :montantMax')
+               ->setParameter('montantMax', $montantMax);
+        }
+
+        if ($description !== null) {
+            $qb->andWhere('a.description LIKE :description')
+               ->setParameter('description', '%' . $description . '%');
+        }
+
+        if ($dateMin !== null) {
+            $qb->andWhere('a.dateAction >= :dateMin')
+               ->setParameter('dateMin', $dateMin);
+        }
+
+        if ($dateMax !== null) {
+            $qb->andWhere('a.dateAction <= :dateMax')
+               ->setParameter('dateMax', $dateMax);
+        }
+
+        return $qb->orderBy('a.dateAction', 'DESC')
+                  ->getQuery()
+                  ->getResult();
+    }
+
 //    /**
 //     * @return Alimentation[] Returns an array of Alimentation objects
 //     */
