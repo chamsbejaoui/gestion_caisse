@@ -1,4 +1,43 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+{{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+    <div class="row g-3">
+        <div class="col-md-6">
+            {{ form_row(form.montant, {
+                'attr': {
+                    'class': 'form-control form-control-lg',
+                    'placeholder': 'Entrez le montant'
+                },
+                'label_attr': {
+                    'class': 'form-label fw-bold'
+                }
+            }) }}
+        </div>
+        <div class="col-md-6">
+            {{ form_row(form.dateAction, {
+                'attr': {
+                    'class': 'form-control form-control-lg'
+                },
+                'label_attr': {
+                    'class': 'form-label fw-bold'
+                }
+            }) }}
+        </div>
+        <div class="col-12">
+            {{ form_row(form.description, {
+                'attr': {
+                    'class': 'form-control form-control-lg',
+                    'placeholder': 'Entrez la description',
+                    'rows': 3
+                },
+                'label_attr': {
+                    'class': 'form-label fw-bold'
+                }
+            }) }}
+        </div>
+    </div>
+
+    <div class="d-grid gap-2 mt-4">
+        <button type="submit" class="btn btn-primary btn-lg">
+            <i class="fas fa-save me-2"></i>{{ button_label|default('Enregistrer') }}
+        </button>
+    </div>
 {{ form_end(form) }}

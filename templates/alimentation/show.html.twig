@@ -1,38 +1,92 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Alimentation{% endblock %}
+{% block title %}Détails de l'Alimentation{% endblock %}
 
 {% block body %}
-    <h1>Alimentation</h1>
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg border-0 rounded-3">
+                    <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+                        <h1 class="h4 mb-0"><i class="fas fa-money-bill-wave me-2"></i>Détails de l'Alimentation</h1>
+                        <div class="btn-group">
+                            <a href="{{ path('app_alimentation_index') }}" class="btn btn-light">
+                                <i class="fas fa-arrow-left me-2"></i>Retour
+                            </a>
+                            <a href="{{ path('app_alimentation_edit', {'id': alimentation.id}) }}" class="btn btn-warning">
+                                <i class="fas fa-edit me-2"></i>Modifier
+                            </a>
+                        </div>
+                    </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ alimentation.id }}</td>
-            </tr>
-            <tr>
-                <th>Montant</th>
-                <td>{{ alimentation.montant }}</td>
-            </tr>
-            <tr>
-                <th>Source</th>
-                <td>{{ alimentation.source }}</td>
-            </tr>
-            <tr>
-                <th>DateAction</th>
-                <td>{{ alimentation.dateAction ? alimentation.dateAction|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>CreatedAt</th>
-                <td>{{ alimentation.createdAt ? alimentation.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+                    <div class="card-body p-4">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="info-card bg-light rounded p-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-fingerprint text-primary me-2"></i>
+                                        <h3 class="h6 mb-0">ID</h3>
+                                    </div>
+                                    <p class="mb-0">{{ alimentation.id }}</p>
+                                </div>
+                            </div>
 
-    <a href="{{ path('app_alimentation_index') }}">back to list</a>
+                            <div class="col-md-6">
+                                <div class="info-card bg-light rounded p-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-coins text-success me-2"></i>
+                                        <h3 class="h6 mb-0">Montant</h3>
+                                    </div>
+                                    <p class="mb-0">{{ alimentation.montant }} DT</p>
+                                </div>
+                            </div>
 
-    <a href="{{ path('app_alimentation_edit', {'id': alimentation.id}) }}">edit</a>
+                            <div class="col-md-12">
+                                <div class="info-card bg-light rounded p-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-info-circle text-info me-2"></i>
+                                        <h3 class="h6 mb-0">Source</h3>
+                                    </div>
+                                    <p class="mb-0">{{ alimentation.source }}</p>
+                                </div>
+                            </div>
 
-    {{ include('alimentation/_delete_form.html.twig') }}
+                            <div class="col-md-6">
+                                <div class="info-card bg-light rounded p-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-calendar-alt text-primary me-2"></i>
+                                        <h3 class="h6 mb-0">Date d'Action</h3>
+                                    </div>
+                                    <p class="mb-0">{{ alimentation.dateAction ? alimentation.dateAction|date('d/m/Y H:i') : 'Non définie' }}</p>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="info-card bg-light rounded p-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-clock text-warning me-2"></i>
+                                        <h3 class="h6 mb-0">Date de Création</h3>
+                                    </div>
+                                    <p class="mb-0">{{ alimentation.createdAt ? alimentation.createdAt|date('d/m/Y H:i') : 'Non définie' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer bg-light py-3">
+                        {{ include('alimentation/_delete_form.html.twig') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+    .info-card {
+        transition: transform 0.2s ease-in-out;
+    }
+    .info-card:hover {
+        transform: translateY(-2px);
+    }
+    </style>
 {% endblock %}

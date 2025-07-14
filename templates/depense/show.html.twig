@@ -1,38 +1,60 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Depense{% endblock %}
+{% block title %}Détails de la Dépense{% endblock %}
 
 {% block body %}
-    <h1>Depense</h1>
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg border-0 rounded-3">
+                    <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+                        <h1 class="h4 mb-0">
+                            <i class="fas fa-money-bill-wave me-2"></i>Détails de la Dépense #{{ depense.id }}
+                        </h1>
+                        <a href="{{ path('app_depense_index') }}" class="btn btn-light">
+                            <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+                        </a>
+                    </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ depense.id }}</td>
-            </tr>
-            <tr>
-                <th>Montant</th>
-                <td>{{ depense.montant }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ depense.description }}</td>
-            </tr>
-            <tr>
-                <th>DateAction</th>
-                <td>{{ depense.dateAction ? depense.dateAction|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>CreatedAt</th>
-                <td>{{ depense.createdAt ? depense.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+                    <div class="card-body p-4">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <h5 class="text-muted mb-2">Montant</h5>
+                                    <span class="badge bg-success fs-5">{{ depense.montant }} €</span>
+                                </div>
+                                <div class="mb-4">
+                                    <h5 class="text-muted mb-2">Description</h5>
+                                    <p class="lead">{{ depense.description }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <h5 class="text-muted mb-2">Date d'Action</h5>
+                                    <p class="lead">
+                                        <i class="far fa-calendar-alt me-2 text-primary"></i>
+                                        {{ depense.dateAction ? depense.dateAction|date('d/m/Y H:i') : 'Non définie' }}
+                                    </p>
+                                </div>
+                                <div class="mb-4">
+                                    <h5 class="text-muted mb-2">Date de Création</h5>
+                                    <p class="lead">
+                                        <i class="far fa-clock me-2 text-primary"></i>
+                                        {{ depense.createdAt ? depense.createdAt|date('d/m/Y H:i') : 'Non définie' }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-    <a href="{{ path('app_depense_index') }}">back to list</a>
-
-    <a href="{{ path('app_depense_edit', {'id': depense.id}) }}">edit</a>
-
-    {{ include('depense/_delete_form.html.twig') }}
+                    <div class="card-footer bg-light py-3 d-flex justify-content-between align-items-center">
+                        <a href="{{ path('app_depense_edit', {'id': depense.id}) }}" class="btn btn-warning">
+                            <i class="fas fa-edit me-2"></i>Modifier
+                        </a>
+                        {{ include('depense/_delete_form.html.twig') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
