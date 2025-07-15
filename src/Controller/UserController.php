@@ -15,6 +15,7 @@ use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/admin', name: 'app_admin_')]
 final class UserController extends AbstractController
@@ -26,10 +27,20 @@ final class UserController extends AbstractController
     ) {}
 
     #[Route('/', name: 'index', methods: ['GET'])]
-    public function index(UserRepository $userRepository): Response
+    public function index(Request $request, UserRepository $userRepository, PaginatorInterface $paginator): Response
     {
+        $query = $userRepository->createQueryBuilder('u')
+            ->orderBy('u.email', 'ASC')
+            ->getQuery();
+
+        $pagination = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            10 // Nombre d'éléments par page
+        );
+
         return $this->render('admin/index.html.twig', [
-            'users' => $userRepository->findAll(),
+            'users' => $pagination,
         ]);
     }
 

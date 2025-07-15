@@ -12,17 +12,18 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/alimentation')]
 final class AlimentationController extends AbstractController
 {
     #[Route(name: 'app_alimentation_index', methods: ['GET'])]
-    public function index(Request $request, AlimentationRepository $alimentationRepository): Response
+    public function index(Request $request, AlimentationRepository $alimentationRepository, PaginatorInterface $paginator): Response
     {
         $form = $this->createForm(AlimentationSearchType::class);
         $form->handleRequest($request);
 
-        $alimentations = $alimentationRepository->findBySearchCriteria(
+        $query = $alimentationRepository->createQueryBuilderForSearch(
             $form->get('montantMin')->getData(),
             $form->get('montantMax')->getData(),
             $form->get('description')->getData(),
@@ -30,8 +31,14 @@ final class AlimentationController extends AbstractController
             $form->get('dateMax')->getData()
         );
 
+        $pagination = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            10 // Nombre d'éléments par page
+        );
+
         return $this->render('alimentation/index.html.twig', [
-            'alimentations' => $alimentations,
+            'alimentations' => $pagination,
             'searchForm' => $form->createView(),
         ]);
     }

@@ -11,17 +11,18 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/depense')]
 final class DepenseController extends AbstractController
 {
     #[Route(name: 'app_depense_index', methods: ['GET'])]
-    public function index(Request $request, DepenseRepository $depenseRepository): Response
+    public function index(Request $request, DepenseRepository $depenseRepository, PaginatorInterface $paginator): Response
     {
         $form = $this->createForm(DepenseSearchType::class);
         $form->handleRequest($request);
 
-        $depenses = $depenseRepository->findBySearchCriteria(
+        $query = $depenseRepository->createQueryBuilderForSearch(
             $form->get('montantMin')->getData(),
             $form->get('montantMax')->getData(),
             $form->get('description')->getData(),
@@ -29,8 +30,14 @@ final class DepenseController extends AbstractController
             $form->get('dateMax')->getData()
         );
 
+        $pagination = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            10 // Nombre d'éléments par page
+        );
+
         return $this->render('depense/index.html.twig', [
-            'depenses' => $depenses,
+            'depenses' => $pagination,
             'searchForm' => $form->createView(),
         ]);
     }

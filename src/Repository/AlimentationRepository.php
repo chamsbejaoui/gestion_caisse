@@ -16,7 +16,7 @@ class AlimentationRepository extends ServiceEntityRepository
         parent::__construct($registry, Alimentation::class);
     }
 
-    public function findBySearchCriteria(?float $montantMin = null, ?float $montantMax = null, ?string $description = null, ?\DateTimeInterface $dateMin = null, ?\DateTimeInterface $dateMax = null): array
+    public function createQueryBuilderForSearch(?float $montantMin = null, ?float $montantMax = null, ?string $description = null, ?\DateTimeInterface $dateMin = null, ?\DateTimeInterface $dateMax = null)
     {
         $qb = $this->createQueryBuilder('a');
 
@@ -45,9 +45,14 @@ class AlimentationRepository extends ServiceEntityRepository
                ->setParameter('dateMax', $dateMax);
         }
 
-        return $qb->orderBy('a.dateAction', 'DESC')
-                  ->getQuery()
-                  ->getResult();
+        return $qb->orderBy('a.dateAction', 'DESC');
+    }
+
+    public function findBySearchCriteria(?float $montantMin = null, ?float $montantMax = null, ?string $description = null, ?\DateTimeInterface $dateMin = null, ?\DateTimeInterface $dateMax = null): array
+    {
+        return $this->createQueryBuilderForSearch($montantMin, $montantMax, $description, $dateMin, $dateMax)
+                    ->getQuery()
+                    ->getResult();
     }
 
 //    /**

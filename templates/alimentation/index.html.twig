@@ -95,6 +95,14 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <div class="text-muted">
+                        Total : {{ alimentations.getTotalItemCount }} alimentation(s)
+                    </div>
+                    <div class="navigation">
+                        {{ knp_pagination_render(alimentations, '@KnpPaginator/Pagination/bootstrap_v5_pagination.html.twig') }}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
