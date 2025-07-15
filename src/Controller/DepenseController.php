@@ -13,12 +13,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/depense')]
-final class DepenseController extends AbstractBaseController
+final class DepenseController extends AbstractController
 {
     #[Route(name: 'app_depense_index', methods: ['GET'])]
     public function index(Request $request, DepenseRepository $depenseRepository): Response
     {
-        $this->initialize();
         $form = $this->createForm(DepenseSearchType::class);
         $form->handleRequest($request);
 

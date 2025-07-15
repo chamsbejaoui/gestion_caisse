@@ -16,16 +16,6 @@ class AlimentationRepository extends ServiceEntityRepository
         parent::__construct($registry, Alimentation::class);
     }
 
-    public function calculateTotalAmount(): float
-    {
-        $result = $this->createQueryBuilder('a')
-            ->select('SUM(a.montant)')
-            ->getQuery()
-            ->getSingleScalarResult();
-        
-        return $result ?? 0.0;
-    }
-
     public function findBySearchCriteria(?float $montantMin = null, ?float $montantMax = null, ?string $description = null, ?\DateTimeInterface $dateMin = null, ?\DateTimeInterface $dateMax = null): array
     {
         $qb = $this->createQueryBuilder('a');

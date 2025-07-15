@@ -14,12 +14,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/alimentation')]
-final class AlimentationController extends AbstractBaseController
+final class AlimentationController extends AbstractController
 {
     #[Route(name: 'app_alimentation_index', methods: ['GET'])]
     public function index(Request $request, AlimentationRepository $alimentationRepository): Response
     {
-        $this->initialize();
         $form = $this->createForm(AlimentationSearchType::class);
         $form->handleRequest($request);
 

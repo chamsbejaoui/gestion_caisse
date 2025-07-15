@@ -16,16 +16,6 @@ class DepenseRepository extends ServiceEntityRepository
         parent::__construct($registry, Depense::class);
     }
 
-    public function calculateTotalAmount(): float
-    {
-        $result = $this->createQueryBuilder('d')
-            ->select('SUM(d.montant)')
-            ->getQuery()
-            ->getSingleScalarResult();
-        
-        return $result ?? 0.0;
-    }
-
     public function findBySearchCriteria(?float $montantMin = null, ?float $montantMax = null, ?string $description = null, ?\DateTimeInterface $dateMin = null, ?\DateTimeInterface $dateMax = null): array
     {
         $qb = $this->createQueryBuilder('d');

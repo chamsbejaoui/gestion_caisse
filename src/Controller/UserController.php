@@ -17,7 +17,7 @@ use Symfony\Component\Mime\Email;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 #[Route('/admin', name: 'app_admin_')]
-final class UserController extends AbstractBaseController
+final class UserController extends AbstractController
 {
     public function __construct(
         private UserPasswordHasherInterface $passwordHasher,
@@ -28,7 +28,6 @@ final class UserController extends AbstractBaseController
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(UserRepository $userRepository): Response
     {
-        $this->initialize();
         return $this->render('admin/index.html.twig', [
             'users' => $userRepository->findAll(),
         ]);

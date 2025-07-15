@@ -7,12 +7,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Security;
 
-final class HomeController extends AbstractBaseController
+class HomeController extends AbstractController
 {
     #[Route('/', name: 'app_home')]
     public function index(): Response
     {
-        $this->initialize();
         // Vérifier si l'utilisateur est connecté
         if (!$this->getUser()) {
             // Rediriger vers la page de connexion pour les utilisateurs non connectés
