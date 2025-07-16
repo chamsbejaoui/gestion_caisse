@@ -1,0 +1,12 @@
+dh_auditor:
+    enabled: true
+    timezone: 'Africa/Tunis'
+    providers:
+        doctrine:
+            table_prefix: null
+            table_suffix: '_audit'
+            entities:
+                App\Entity\Depense: ~
+                App\Entity\Alimentation: ~
+                App\Entity\User: ~
+                App\Entity\Categorie: ~
