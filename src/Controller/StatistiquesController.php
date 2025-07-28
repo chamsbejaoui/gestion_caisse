@@ -53,13 +53,46 @@ class StatistiquesController extends AbstractController
             ->orderBy('periode', 'DESC')
             ->getQuery()->getResult();
 
+        // Calcul de l'évolution des alimentations (trendAlimentations)
+        // On compare la somme de la période courante à la précédente
+        $currentTotal = 0;
+        $previousTotal = 0;
+        if (count($alimentationsParPeriode) > 0) {
+            $currentTotal = $alimentationsParPeriode[0]['total'];
+            if (isset($alimentationsParPeriode[1])) {
+                $previousTotal = $alimentationsParPeriode[1]['total'];
+            }
+        }
+        if ($previousTotal > 0) {
+            $diff = $currentTotal - $previousTotal;
+            $percent = ($diff / $previousTotal) * 100;
+        } else {
+            $diff = $currentTotal;
+            $percent = 100;
+        }
+        if ($diff > 0) {
+            $direction = 'up';
+            $text = sprintf('+%.2f%%', $percent);
+        } elseif ($diff < 0) {
+            $direction = 'down';
+            $text = sprintf('%.2f%%', $percent);
+        } else {
+            $direction = 'right';
+            $text = '0%';
+        }
+        $trendAlimentations = [
+            'direction' => $direction,
+            'text' => $text
+        ];
+
         if ($request->isXmlHttpRequest()) {
             return $this->json([
                 'periode' => $periode,
                 'totalDepenses' => $totalDepenses,
                 'depensesParMois' => $depensesParPeriode,
                 'totalAlimentations' => $totalAlimentations,
-                'alimentationsParMois' => $alimentationsParPeriode
+                'alimentationsParMois' => $alimentationsParPeriode,
+                'trendAlimentations' => $trendAlimentations
             ]);
         }
         return $this->render('statistiques/index.html.twig', [
@@ -67,7 +100,8 @@ class StatistiquesController extends AbstractController
             'totalDepenses' => $totalDepenses,
             'depensesParMois' => $depensesParPeriode,
             'totalAlimentations' => $totalAlimentations,
-            'alimentationsParMois' => $alimentationsParPeriode
+            'alimentationsParMois' => $alimentationsParPeriode,
+            'trendAlimentations' => $trendAlimentations
         ]);
     }
 }

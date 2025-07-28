@@ -116,7 +116,9 @@
                     <div>
                         <h6 class="card-subtitle mb-2">Total Alimentations</h6>
                         <h3 class="card-title mb-0">{{ totalAlimentations|number_format(2, ',', ' ') }} €</h3>
-                        <small class="trend-indicator"><i class="bi bi-arrow-up-right"></i> par rapport à la période précédente</small>
+                        <small class="trend-indicator {% if trendAlimentations.direction == 'up' %}trend-up{% elseif trendAlimentations.direction == 'down' %}trend-down{% endif %}">
+                            <i class="bi bi-arrow-{{ trendAlimentations.direction }}-right"></i> {{ trendAlimentations.text }} par rapport à la période précédente
+                        </small>
                     </div>
                     <i class="bi bi-cash-coin stats-icon"></i>
                 </div>
