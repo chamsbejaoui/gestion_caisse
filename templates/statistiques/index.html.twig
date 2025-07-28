@@ -216,7 +216,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+function initStatsCharts() {
+    // --- tout le code d'initialisation des graphiques ici ---
+
     // Navigation AJAX pour la période
     document.querySelectorAll('.period-selector .btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
@@ -379,7 +381,9 @@ document.addEventListener('DOMContentLoaded', function() {
             options: chartOptions
         });
     }
-});
+}
+document.addEventListener('DOMContentLoaded', initStatsCharts);
+document.addEventListener('turbo:load', initStatsCharts);
 
 function updateChartType(chartId, newType) {
     const chart = window[chartId];

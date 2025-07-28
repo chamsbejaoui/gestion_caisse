@@ -36,7 +36,7 @@ final class UserController extends AbstractController
         $pagination = $paginator->paginate(
             $query,
             $request->query->getInt('page', 1),
-            10 // Nombre d'éléments par page
+            10
         );
 
         return $this->render('admin/index.html.twig', [
@@ -45,13 +45,23 @@ final class UserController extends AbstractController
     }
 
     #[Route('/new', name: 'new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository): Response
     {
         $user = new User();
         $form = $this->createForm(UserForm::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Vérification d'unicité
+            $existingUser = $userRepository->findOneBy(['email' => $user->getEmail()]);
+            if ($existingUser) {
+                $this->addFlash('error', 'Cet email est déjà utilisé.');
+                return $this->render('admin/new.html.twig', [
+                    'user' => $user,
+                    'form' => $form->createView(),
+                ]);
+            }
+
             $plainPassword = $form->get('plainPassword')->getData();
             if ($plainPassword) {
                 $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
@@ -63,7 +73,6 @@ final class UserController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // Génération du lien de confirmation
             $signatureComponents = $this->verifyEmailHelper->generateSignature(
                 'app_admin_verify_email',
                 $user->getId(),
@@ -82,11 +91,47 @@ final class UserController extends AbstractController
             $this->mailer->send($email);
 
             $this->addFlash('success', 'Un email de confirmation a été envoyé.');
-
             return $this->redirectToRoute('app_admin_index');
         }
 
         return $this->render('admin/new.html.twig', [
+            'user' => $user,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, User $user, EntityManagerInterface $entityManager, UserRepository $userRepository): Response
+    {
+        $form = $this->createForm(UserForm::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Vérification d'unicité si email modifié
+            $newEmail = $user->getEmail();
+            $existingUser = $userRepository->findOneBy(['email' => $newEmail]);
+
+            if ($existingUser && $existingUser->getId() !== $user->getId()) {
+                $this->addFlash('error', 'Cet email est déjà utilisé par un autre utilisateur.');
+                return $this->render('admin/edit.html.twig', [
+                    'user' => $user,
+                    'form' => $form->createView(),
+                ]);
+            }
+
+            $plainPassword = $form->get('plainPassword')->getData();
+            if ($plainPassword) {
+                $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
+                $user->setPassword($hashedPassword);
+            }
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Utilisateur modifié avec succès.');
+            return $this->redirectToRoute('app_admin_index');
+        }
+
+        return $this->render('admin/edit.html.twig', [
             'user' => $user,
             'form' => $form->createView(),
         ]);
@@ -153,7 +198,7 @@ final class UserController extends AbstractController
         $entityManager->flush();
 
         $this->addFlash('success', 'Ton adresse email a bien été confirmée.');
-        return $this->redirectToRoute('app_user_index');
+        return $this->redirectToRoute('app_admin_index');
     }
 
     #[Route('/{id}', name: 'show', methods: ['GET'])]
@@ -161,30 +206,6 @@ final class UserController extends AbstractController
     {
         return $this->render('admin/show.html.twig', [
             'user' => $user,
-        ]);
-    }
-
-    #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(UserForm::class, $user);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $plainPassword = $form->get('plainPassword')->getData();
-            if ($plainPassword) {
-                $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
-                $user->setPassword($hashedPassword);
-            }
-
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_admin_index');
-        }
-
-        return $this->render('admin/edit.html.twig', [
-            'user' => $user,
-            'form' => $form->createView(),
         ]);
     }
 
@@ -196,6 +217,6 @@ final class UserController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_user_index');
+        return $this->redirectToRoute('app_admin_index');
     }
 }

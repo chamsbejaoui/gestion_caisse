@@ -3,7 +3,7 @@
 {% block title %}Liste des Dépenses{% endblock %}
 
 {% block body %}
-    <div class="container-fluid py-4">
+    <div class="container py-4">
         <div class="card shadow-lg border-0 rounded-3">
             <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
                 <h1 class="h4 mb-0"><i class="fas fa-money-bill-wave me-2"></i>Liste des Dépenses</h1>
@@ -45,46 +45,49 @@
                     {{ form_end(searchForm) }}
                 </div>
                 <div class="table-responsive">
-                    <table class="table table-hover table-striped mb-0">
+                    <table class="table table-hover mb-0">
                         <thead class="bg-light">
                             <tr>
-                                <th class="px-4">#</th>
-                                <th>Montant</th>
-                                <th>Description</th>
-                                <th>Date d'Action</th>
-                                <th>Date de Création</th>
-                                <th>Utilisateur</th>
-                                <th class="text-center">Actions</th>
+                                <th class="px-4 py-3">ID</th>
+<th class="px-4 py-3">Montant</th>
+<th class="px-4 py-3">Description</th>
+<th class="px-4 py-3">Date d'Action</th>
+<th class="px-4 py-3">Date de Création</th>
+<th class="px-4 py-3 text-end">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                         {% for depense in depenses %}
                             <tr>
-                                <td class="px-4">{{ depense.id }}</td>
-                                <td>
-                                    <span class="badge bg-success fs-6">{{ depense.montant }} DT</span>
-                                </td>
-                                <td>{{ depense.description }}</td>
-                                <td>
-                                    <i class="far fa-calendar-alt me-2 text-muted"></i>
-                                    {{ depense.dateAction ? depense.dateAction|date('d/m/Y H:i') : '' }}
-                                </td>
-                                <td>
-                                    <i class="far fa-clock me-2 text-muted"></i>
-                                    {{ depense.createdAt ? depense.createdAt|date('d/m/Y H:i') : '' }}
-                                </td>
-                                <td>
-                                    <i class="far fa-user me-2 text-muted"></i>
-                                    {{ depense.user ? depense.user.email : '—' }}
-                                </td>
-                                <td class="text-center">
-                                    <a href="{{ path('app_depense_show', {'id': depense.id}) }}" class="btn btn-info btn-sm me-2" title="Voir">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="{{ path('app_depense_edit', {'id': depense.id}) }}" class="btn btn-warning btn-sm" title="Modifier">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                </td>
+                                <td class="px-4 py-3">{{ depense.id }}</td>
+<td class="px-4 py-3">
+    <span class="badge bg-success rounded-pill">
+        <i class="fas fa-coins me-1"></i>
+        {{ depense.montant }} DT
+    </span>
+</td>
+<td class="px-4 py-3">
+    <i class="fas fa-info-circle text-primary me-2"></i>
+    {{ depense.description }}
+</td>
+<td class="px-4 py-3">
+    <i class="fas fa-calendar-alt text-info me-2"></i>
+    {{ depense.dateAction ? depense.dateAction|date('d/m/Y H:i') : '' }}
+</td>
+<td class="px-4 py-3">
+    <i class="fas fa-clock text-warning me-2"></i>
+    {{ depense.createdAt ? depense.createdAt|date('d/m/Y H:i') : '' }}
+</td>
+<td class="px-4 py-3 text-end">
+    <div class="btn-group" role="group">
+        <a href="{{ path('app_depense_show', {'id': depense.id}) }}" class="btn btn-sm btn-outline-primary" title="Voir">
+            <i class="fas fa-eye"></i>
+        </a>
+        <a href="{{ path('app_depense_edit', {'id': depense.id}) }}" class="btn btn-sm btn-outline-warning" title="Modifier">
+            <i class="fas fa-edit"></i>
+        </a>
+    </div>
+</td>
                             </tr>
                         {% else %}
                             <tr>
