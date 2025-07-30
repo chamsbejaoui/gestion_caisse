@@ -16,3 +16,9 @@ services:
     App\:
         resource: '../src/'
     # please note that last definitions always *replace* previous ones
+
+    App\Security\AuditorUserProvider:
+        arguments:
+            $tokenStorage: '@security.token_storage'
+    
+   

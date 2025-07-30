@@ -4,7 +4,10 @@ namespace App\Entity;
 
 use App\Repository\DepenseRepository;
 use Doctrine\ORM\Mapping as ORM;
+use DH\Auditor\Provider\Doctrine\Auditing\Annotation\Auditable;
+
 #[ORM\Entity(repositoryClass: DepenseRepository::class)]
+#[Auditable]
 class Depense
 {
     #[ORM\Id]

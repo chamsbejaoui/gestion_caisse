@@ -4,7 +4,10 @@ namespace App\Entity;
 
 use App\Repository\AlimentationRepository;
 use Doctrine\ORM\Mapping as ORM;
+use DH\Auditor\Provider\Doctrine\Auditing\Annotation\Auditable;
+
 #[ORM\Entity(repositoryClass: AlimentationRepository::class)]
+#[Auditable]
 class Alimentation
 {
     #[ORM\Id]
