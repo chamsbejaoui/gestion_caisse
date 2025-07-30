@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Historique des Modifications{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">Historique des Modifications</h1>
+    <p class="mb-4">Cette page affiche l'historique de toutes les modifications (créations, mises à jour, suppressions) sur les données de l'application.</p>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Journal d'audit</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Type d'Entité</th>
+                            <th>ID Entité</th>
+                            <th>Type d'Action</th>
+                            <th>Utilisateur</th>
+                            <th>Date</th>
+                            <th>Modifications</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in auditData %}
+                            <tr>
+                                <td>{{ entry.id }}</td>
+                                <td>{{ entry.entity_type }}</td>
+                                <td>{{ entry.object_id }}</td>
+                                <td>
+                                    {% if entry.type == 'insert' %}
+                                        Création
+                                    {% elseif entry.type == 'update' %}
+                                        Modification
+                                    {% elseif entry.type == 'delete' %}
+                                        Suppression
+                                    {% else %}
+                                        {{ entry.type }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ entry.user_id }}</td>
+                                <td>{{ entry.created_at|date('d/m/Y H:i:s') }}</td>
+                                <td style="white-space: pre-line">{{ entry.formatted_body }}</td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center">Aucun enregistrement d'audit trouvé.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
