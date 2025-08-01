@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\AlimentationRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use DH\Auditor\Provider\Doctrine\Auditing\Annotation\Auditable;
 
 #[ORM\Entity(repositoryClass: AlimentationRepository::class)]
@@ -16,12 +17,16 @@ class Alimentation
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Assert\NotNull(message: 'Le montant ne peut pas être vide.')]
+    #[Assert\Positive(message: 'Le montant doit être un nombre positif.')]
     private ?float $montant = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'La source ne peut pas être vide.')]
     private ?string $source = null;
 
     #[ORM\Column]
+    #[Assert\NotNull(message: 'La date ne peut pas être vide.')]
     private ?\DateTimeImmutable $dateAction = null;
 
     #[ORM\Column]

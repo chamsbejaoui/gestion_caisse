@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\DepenseRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use DH\Auditor\Provider\Doctrine\Auditing\Annotation\Auditable;
 
 #[ORM\Entity(repositoryClass: DepenseRepository::class)]
@@ -16,12 +17,16 @@ class Depense
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Assert\NotNull(message: 'Le montant ne peut pas être vide.')]
+    #[Assert\Positive(message: 'Le montant doit être un nombre positif.')]
     private ?float $montant = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'La description ne peut pas être vide.')]
     private ?string $description = null;
 
     #[ORM\Column]
+    #[Assert\NotNull(message: 'La date ne peut pas être vide.')]
     private ?\DateTimeImmutable $dateAction = null;
 
     #[ORM\Column]
@@ -33,6 +38,7 @@ class Depense
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: 'Veuillez sélectionner une catégorie.')]
     private ?Categorie $Categorie = null;
 
     public function getId(): ?int
