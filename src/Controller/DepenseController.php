@@ -7,6 +7,7 @@ use App\Form\DepenseType;
 use App\Form\DepenseSearchType;
 use App\Form\ExportOptionsFormType;
 use App\Repository\DepenseRepository;
+use App\Service\CaisseService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -164,7 +165,7 @@ final class DepenseController extends AbstractController
     }
 
     #[Route('/new', name: 'app_depense_new', methods: ['GET', 'POST'])]
-public function new(Request $request, EntityManagerInterface $entityManager): Response
+public function new(Request $request, EntityManagerInterface $entityManager, CaisseService $caisseService): Response
 {
     $depense = new Depense();
     $form = $this->createForm(DepenseType::class, $depense);
@@ -176,6 +177,9 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
 
         $entityManager->persist($depense);
         $entityManager->flush();
+
+        // Mettre à jour le solde de la caisse
+        $caisseService->updateSolde(-$depense->getMontant());
 
         return $this->redirectToRoute('app_depense_index', [], Response::HTTP_SEE_OTHER);
     }
@@ -196,13 +200,20 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
     }
 
     #[Route('/{id}/edit', name: 'app_depense_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Depense $depense, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Depense $depense, EntityManagerInterface $entityManager, CaisseService $caisseService): Response
     {
+        $originalMontant = $depense->getMontant();
         $form = $this->createForm(DepenseType::class, $depense);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $newMontant = $depense->getMontant();
+            $montantDifference = $originalMontant - $newMontant;
+            
             $entityManager->flush();
+
+            // Mettre à jour le solde avec la différence
+            $caisseService->updateSolde($montantDifference);
 
             return $this->redirectToRoute('app_depense_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -214,11 +225,15 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
     }
 
     #[Route('/{id}', name: 'app_depense_delete', methods: ['POST'])]
-    public function delete(Request $request, Depense $depense, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, Depense $depense, EntityManagerInterface $entityManager, CaisseService $caisseService): Response
     {
         if ($this->isCsrfTokenValid('delete'.$depense->getId(), $request->getPayload()->getString('_token'))) {
+            $montant = $depense->getMontant();
             $entityManager->remove($depense);
             $entityManager->flush();
+
+            // Remettre le montant dans la caisse
+            $caisseService->updateSolde($montant);
         }
 
         return $this->redirectToRoute('app_depense_index', [], Response::HTTP_SEE_OTHER);

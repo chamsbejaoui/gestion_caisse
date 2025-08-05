@@ -42,7 +42,7 @@ security:
 
     # 🔒 Tout le reste des routes /admin exige ROLE_ADMIN
     - { path: ^/admin, roles: ROLE_ADMIN }
-
+    - { path: ^/depense, roles: ROLE_ADMIN }
     # 👤 Toutes les autres pages du site accessibles aux utilisateurs connectés
     - { path: ^/, roles: ROLE_USER }
 
