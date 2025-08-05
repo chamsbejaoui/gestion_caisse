@@ -61,7 +61,12 @@
                                 <a class="nav-link" href="{{ path('app_historique') }}">
                                     <i class="fas fa-history me-1"></i> Historique
                                 </a>
-                       
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ path('app_caisse_configure') }}">
+                                    <i class="fas fa-cogs me-1"></i> Configuration Caisse
+                                </a>
+                            </li>
                         {% endif %}
                     </ul>
                     {% if app.user %}

@@ -7,7 +7,7 @@
         <h1>Configurer le seuil d'alerte</h1>
 
         <div class="alert alert-info">
-            <p class="mb-0">Solde actuel de la caisse : <strong>{{ caisse.solde|number_format(2, ',', ' ') }} €</strong></p>
+            <p class="mb-0">Solde actuel de la caisse : <strong>{{ caisse.solde|number_format(3, ',', ' ') }} TND</strong></p>
         </div>
 
         {{ form_start(form) }}

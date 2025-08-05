@@ -90,8 +90,8 @@ class CaisseService
             <p>Bonjour,</p>
             <p>Le solde de la caisse est passé en dessous du seuil d'alerte.</p>
             <ul>
-                <li><strong>Solde actuel :</strong> {$solde} €</li>
-                <li><strong>Seuil d'alerte :</strong> {$seuil} €</li>
+                <li><strong>Solde actuel :</strong> {$solde} TND</li>
+                <li><strong>Seuil d'alerte :</strong> {$seuil} TND</li>
             </ul>
             <p>Veuillez prendre les mesures nécessaires.</p>
             <p>L'équipe de gestion</p>

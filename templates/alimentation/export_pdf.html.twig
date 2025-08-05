@@ -55,7 +55,7 @@
                     {% for cell in row %}
                         <td>
                             {% if loop.index0 == 2 %}{# Si c'est la colonne Montant #}
-                                {{ cell|number_format(2, ',', ' ') }} €
+                                {{ cell|number_format(3, ',', ' ') }} TND
                             {% else %}
                                 {{ cell }}
                             {% endif %}
@@ -72,7 +72,7 @@
             <tfoot>
                 <tr>
                     <td colspan="2"><strong>Total</strong></td>
-                    <td><strong>{{ data|reduce((total, row) => total + (row[2] ?? 0), 0)|number_format(2, ',', ' ') }} €</strong></td>
+                    <td><strong>{{ data|reduce((total, row) => total + (row[2] ?? 0), 0)|number_format(3, ',', ' ') }} TND</strong></td>
                     <td></td>
                 </tr>
             </tfoot>

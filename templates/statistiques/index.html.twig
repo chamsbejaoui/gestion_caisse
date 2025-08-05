@@ -115,7 +115,7 @@
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
                         <h6 class="card-subtitle mb-2">Total Alimentations</h6>
-                        <h3 class="card-title mb-0">{{ totalAlimentations|number_format(2, ',', ' ') }} €</h3>
+                        <h3 class="card-title mb-0">{{ totalAlimentations|number_format(3, ',', ' ') }} TND</h3>
                         <small class="trend-indicator {% if trendAlimentations.direction == 'up' %}trend-up{% elseif trendAlimentations.direction == 'down' %}trend-down{% endif %}">
                             <i class="bi bi-arrow-{{ trendAlimentations.direction }}-right"></i> {{ trendAlimentations.text }} par rapport à la période précédente
                         </small>
@@ -129,7 +129,7 @@
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
                         <h6 class="card-subtitle mb-2">Total Dépenses</h6>
-                        <h3 class="card-title mb-0">{{ totalDepenses|number_format(2, ',', ' ') }} €</h3>
+                        <h3 class="card-title mb-0">{{ totalDepenses|number_format(3, ',', ' ') }} TND</h3>
                         <small class="trend-indicator"><i class="bi bi-arrow-down-right"></i> par rapport à la période précédente</small>
                     </div>
                     <i class="bi bi-credit-card stats-icon"></i>
@@ -242,8 +242,8 @@ function initStatsCharts() {
                     window.depensesChart.update();
                 }
                 // Met à jour les totaux
-                document.querySelector('.bg-success .card-title').textContent = parseFloat(data.totalAlimentations).toLocaleString('fr-FR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
-                document.querySelector('.bg-danger .card-title').textContent = parseFloat(data.totalDepenses).toLocaleString('fr-FR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
+                                document.querySelector('.bg-success .card-title').textContent = parseFloat(data.totalAlimentations).toLocaleString('fr-TN', {minimumFractionDigits:3, maximumFractionDigits:3}) + ' TND';
+                                document.querySelector('.bg-danger .card-title').textContent = parseFloat(data.totalDepenses).toLocaleString('fr-TN', {minimumFractionDigits:3, maximumFractionDigits:3}) + ' TND';
                 // Met à jour l'état actif des boutons
                 document.querySelectorAll('.period-selector .btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
@@ -436,7 +436,7 @@ function exportToExcel() {
     
     // Feuille Alimentations
     const alimentationsWS = XLSX.utils.aoa_to_sheet([
-        ['Période', 'Montant (€)'],
+        ['Période', 'Montant (TND)'],
         ...alimentationsData.labels.map((label, i) => [
             label,
             parseFloat(alimentationsData.datasets[0].data[i]).toFixed(2)
@@ -445,7 +445,7 @@ function exportToExcel() {
     
     // Feuille Dépenses
     const depensesWS = XLSX.utils.aoa_to_sheet([
-        ['Période', 'Montant (€)'],
+        ['Période', 'Montant (TND)'],
         ...depensesData.labels.map((label, i) => [
             label,
             parseFloat(depensesData.datasets[0].data[i]).toFixed(2)
