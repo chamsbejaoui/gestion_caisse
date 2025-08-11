@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Repository\DepenseRepository;
 use App\Repository\AlimentationRepository;
+use App\Service\CaisseService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,10 +13,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class StatistiquesController extends AbstractController
 {
     #[Route('/statistiques', name: 'app_statistiques')]
-    public function index(
+        public function index(
         Request $request,
         DepenseRepository $depenseRepository,
-        AlimentationRepository $alimentationRepository
+        AlimentationRepository $alimentationRepository,
+        CaisseService $caisseService
     ): Response {
         $periode = $request->query->get('periode', 'mois');
         
@@ -85,6 +87,8 @@ class StatistiquesController extends AbstractController
             'text' => $text
         ];
 
+        $soldeCaisse = $caisseService->getCaisse()->getSolde();
+
         if ($request->isXmlHttpRequest()) {
             return $this->json([
                 'periode' => $periode,
@@ -92,7 +96,8 @@ class StatistiquesController extends AbstractController
                 'depensesParMois' => $depensesParPeriode,
                 'totalAlimentations' => $totalAlimentations,
                 'alimentationsParMois' => $alimentationsParPeriode,
-                'trendAlimentations' => $trendAlimentations
+                'trendAlimentations' => $trendAlimentations,
+                'soldeCaisse' => $soldeCaisse
             ]);
         }
         return $this->render('statistiques/index.html.twig', [
@@ -101,7 +106,8 @@ class StatistiquesController extends AbstractController
             'depensesParMois' => $depensesParPeriode,
             'totalAlimentations' => $totalAlimentations,
             'alimentationsParMois' => $alimentationsParPeriode,
-            'trendAlimentations' => $trendAlimentations
+            'trendAlimentations' => $trendAlimentations,
+            'soldeCaisse' => $soldeCaisse
         ]);
     }
 }

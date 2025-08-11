@@ -22,3 +22,42 @@
         </div>
     </div>
 {% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Validation côté client simple et efficace
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            if (!form) return;
+
+            // Validation du mot de passe en temps réel
+            const passwordInput = form.querySelector('input[type="password"]');
+            if (passwordInput) {
+                passwordInput.addEventListener('input', function() {
+                    const value = this.value;
+                    if (value.length > 0 && value.length < 6) {
+                        this.setCustomValidity('Le mot de passe doit contenir au moins 6 caractères');
+                    } else if (value.length > 0 && !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/.test(value)) {
+                        this.setCustomValidity('Le mot de passe doit contenir au moins une minuscule, une majuscule et un chiffre');
+                    } else {
+                        this.setCustomValidity('');
+                    }
+                });
+            }
+
+            // Validation des rôles en temps réel
+            const roleCheckboxes = form.querySelectorAll('input[type="checkbox"][name*="roles"]');
+            roleCheckboxes.forEach(function(checkbox) {
+                checkbox.addEventListener('change', function() {
+                    const checkedRoles = form.querySelectorAll('input[type="checkbox"][name*="roles"]:checked');
+                    if (checkedRoles.length === 0) {
+                        roleCheckboxes.forEach(cb => cb.setCustomValidity('Veuillez sélectionner au moins un rôle.'));
+                    } else {
+                        roleCheckboxes.forEach(cb => cb.setCustomValidity(''));
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

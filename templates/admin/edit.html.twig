@@ -26,3 +26,47 @@
         </div>
     </div>
 {% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Validation côté client pour l'édition
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            if (!form) return;
+
+            // Validation du mot de passe (optionnel en édition)
+            const passwordInput = form.querySelector('input[type="password"]');
+            if (passwordInput) {
+                passwordInput.addEventListener('input', function() {
+                    const value = this.value;
+                    // En édition, le mot de passe est optionnel
+                    if (value.length > 0) {
+                        if (value.length < 6) {
+                            this.setCustomValidity('Le mot de passe doit contenir au moins 6 caractères');
+                        } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/.test(value)) {
+                            this.setCustomValidity('Le mot de passe doit contenir au moins une minuscule, une majuscule et un chiffre');
+                        } else {
+                            this.setCustomValidity('');
+                        }
+                    } else {
+                        this.setCustomValidity('');
+                    }
+                });
+            }
+
+            // Validation des rôles
+            const roleCheckboxes = form.querySelectorAll('input[type="checkbox"][name*="roles"]');
+            roleCheckboxes.forEach(function(checkbox) {
+                checkbox.addEventListener('change', function() {
+                    const checkedRoles = form.querySelectorAll('input[type="checkbox"][name*="roles"]:checked');
+                    if (checkedRoles.length === 0) {
+                        roleCheckboxes.forEach(cb => cb.setCustomValidity('Veuillez sélectionner au moins un rôle.'));
+                    } else {
+                        roleCheckboxes.forEach(cb => cb.setCustomValidity(''));
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

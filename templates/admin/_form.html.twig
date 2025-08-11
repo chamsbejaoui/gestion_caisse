@@ -50,13 +50,10 @@
             </label>
             {{ form_widget(form.plainPassword, {
                 'attr': {
-                    'class': 'form-control form-control-lg',
-                    'placeholder': 'Entrez le mot de passe'
+                    'class': 'form-control form-control-lg'
                 }
             }) }}
-            <div class="form-text">
-                <i class="fas fa-info-circle me-1"></i> Laissez vide pour ne pas modifier le mot de passe
-            </div>
+            {{ form_help(form.plainPassword) }}
             {{ form_errors(form.plainPassword) }}
         </div>
     </div>

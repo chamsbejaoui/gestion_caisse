@@ -11,6 +11,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Positive;
 
 class AlimentationType extends AbstractType
@@ -19,6 +20,11 @@ class AlimentationType extends AbstractType
     {
         $builder
             ->add('montant', NumberType::class, [
+                'required' => true,
+                'attr' => [
+                    'min' => '0.01',
+                    'step' => '0.01',
+                ],
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Veuillez saisir un montant.',
@@ -29,6 +35,11 @@ class AlimentationType extends AbstractType
                 ],
             ])
             ->add('source', TextType::class, [
+                'required' => true,
+                'attr' => [
+                    'minlength' => '2',
+                    'maxlength' => '255',
+                ],
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Veuillez saisir une source.',
@@ -44,6 +55,13 @@ class AlimentationType extends AbstractType
                 'label' => 'Date de l\'action',
                 'widget' => 'single_text',
                 'required' => true,
+                'input' => 'datetime_immutable',
+                'empty_data' => null,
+                'constraints' => [
+                    new NotNull([
+                        'message' => 'Veuillez sélectionner une date.',
+                    ]),
+                ],
             ])
         ;
     }

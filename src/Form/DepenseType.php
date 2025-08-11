@@ -13,6 +13,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Positive;
 
 class DepenseType extends AbstractType
@@ -21,6 +22,11 @@ class DepenseType extends AbstractType
     {
         $builder
             ->add('montant', NumberType::class, [
+                'required' => true,
+                'attr' => [
+                    'min' => '0.01',
+                    'step' => '0.01',
+                ],
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Veuillez saisir un montant.',
@@ -31,6 +37,11 @@ class DepenseType extends AbstractType
                 ],
             ])
             ->add('description', TextType::class, [
+                'required' => true,
+                'attr' => [
+                    'minlength' => '2',
+                    'maxlength' => '255',
+                ],
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Veuillez saisir une description.',
@@ -46,11 +57,20 @@ class DepenseType extends AbstractType
                 'label' => 'Date de l\'action',
                 'widget' => 'single_text',
                 'required' => true,
+                'input' => 'datetime_immutable',
+                'empty_data' => null,
+                'constraints' => [
+                    new NotNull([
+                        'message' => 'Veuillez sélectionner une date.',
+                    ]),
+                ],
             ])
             ->add('Categorie', EntityType::class, [
                 'class' => Categorie::class,
                 'choice_label' => 'nom',
                 'label' => 'Catégorie',
+                'required' => true,
+                'placeholder' => 'Sélectionnez une catégorie',
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Veuillez sélectionner une catégorie.',

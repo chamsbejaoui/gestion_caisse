@@ -28,6 +28,8 @@ class CaisseController extends AbstractController
             $this->addFlash('success', 'Le seuil d\'alerte a été mis à jour avec succès.');
 
             return $this->redirectToRoute('app_caisse_configure');
+        } elseif ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash('error', 'Veuillez corriger les erreurs dans le formulaire.');
         }
 
         return $this->render('caisse/configure.html.twig', [

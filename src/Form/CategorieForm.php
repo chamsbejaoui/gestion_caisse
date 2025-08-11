@@ -16,6 +16,11 @@ class CategorieForm extends AbstractType
     {
         $builder
             ->add('nom', TextType::class, [
+                'required' => true,
+                'attr' => [
+                    'minlength' => '2',
+                    'maxlength' => '255',
+                ],
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Veuillez saisir un nom pour la catégorie.',

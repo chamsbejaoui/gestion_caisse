@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Alimentation;
-use App\Form\AlimentationForm;
 use App\Form\AlimentationType;
 use App\Form\AlimentationSearchType;
 use App\Form\ExportOptionsFormType;
@@ -17,9 +16,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Knp\Component\Pager\PaginatorInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use Dompdf\Dompdf;
-use Dompdf\DompdfOptions;
 use Dompdf\Options;
 #[Route('/alimentation')]
 final class AlimentationController extends AbstractController
@@ -169,6 +166,8 @@ final class AlimentationController extends AbstractController
 public function new(Request $request, EntityManagerInterface $entityManager, CaisseService $caisseService): Response
 {
     $alimentation = new Alimentation();
+    // Définir la date par défaut à maintenant
+    $alimentation->setDateAction(new \DateTimeImmutable());
     $form = $this->createForm(AlimentationType::class, $alimentation);
     $form->handleRequest($request);
 
@@ -182,7 +181,10 @@ public function new(Request $request, EntityManagerInterface $entityManager, Cai
         // Mettre à jour le solde de la caisse
         $caisseService->updateSolde($alimentation->getMontant());
 
+        $this->addFlash('success', 'L\'alimentation a été ajoutée avec succès.');
         return $this->redirectToRoute('app_alimentation_index', [], Response::HTTP_SEE_OTHER);
+    } elseif ($form->isSubmitted() && !$form->isValid()) {
+        $this->addFlash('error', 'Veuillez corriger les erreurs dans le formulaire.');
     }
 
     return $this->render('alimentation/new.html.twig', [
@@ -216,7 +218,10 @@ public function new(Request $request, EntityManagerInterface $entityManager, Cai
             // Mettre à jour le solde avec la différence
             $caisseService->updateSolde($montantDifference);
 
+            $this->addFlash('success', 'L\'alimentation a été modifiée avec succès.');
             return $this->redirectToRoute('app_alimentation_index', [], Response::HTTP_SEE_OTHER);
+        } elseif ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash('error', 'Veuillez corriger les erreurs dans le formulaire.');
         }
 
         return $this->render('alimentation/edit.html.twig', [

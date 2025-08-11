@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Email Validation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .form-group { margin: 15px 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        .email-validation-message { margin-top: 5px; font-size: 14px; }
+        .text-info { color: #17a2b8; }
+        .text-danger { color: #dc3545; }
+        .text-success { color: #28a745; }
+        .is-invalid { border-color: #dc3545; }
+        .is-valid { border-color: #28a745; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test de Validation Email</h1>
+        
+        <form>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="Tapez un email existant...">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Mot de passe:</label>
+                <input type="password" id="password" name="password" placeholder="Mot de passe">
+            </div>
+            
+            <button type="submit">Créer utilisateur</button>
+        </form>
+        
+        <div id="debug" style="margin-top: 20px; padding: 10px; background: #f8f9fa; border-radius: 4px;">
+            <h3>Debug Info:</h3>
+            <div id="debugContent">En attente...</div>
+        </div>
+    </div>
+
+    <script>
+        console.log('Script loaded');
+        
+        // Fonctions de validation email
+        function showEmailValidationLoading(inputElement) {
+            removeEmailValidationMessage(inputElement);
+            
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'email-validation-message text-info';
+            loadingDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Vérification de l\'email...';
+            
+            inputElement.parentNode.appendChild(loadingDiv);
+            updateDebug('Loading: Vérification en cours...');
+        }
+        
+        function showEmailValidationError(inputElement, message) {
+            removeEmailValidationMessage(inputElement);
+            
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'email-validation-message text-danger';
+            errorDiv.innerHTML = `⚠️ ${message}`;
+            
+            inputElement.parentNode.appendChild(errorDiv);
+            inputElement.classList.add('is-invalid');
+            updateDebug(`Error: ${message}`);
+        }
+        
+        function showEmailValidationSuccess(inputElement) {
+            removeEmailValidationMessage(inputElement);
+            
+            const successDiv = document.createElement('div');
+            successDiv.className = 'email-validation-message text-success';
+            successDiv.innerHTML = '✅ Email disponible';
+            
+            inputElement.parentNode.appendChild(successDiv);
+            inputElement.classList.remove('is-invalid');
+            inputElement.classList.add('is-valid');
+            updateDebug('Success: Email disponible');
+        }
+        
+        function removeEmailValidationMessage(inputElement) {
+            const existingMessage = inputElement.parentNode.querySelector('.email-validation-message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+            inputElement.classList.remove('is-invalid', 'is-valid');
+        }
+        
+        function updateDebug(message) {
+            document.getElementById('debugContent').innerHTML = message + '<br>' + document.getElementById('debugContent').innerHTML;
+        }
+        
+        function checkEmailUniqueness(email, userId, inputElement) {
+            console.log('checkEmailUniqueness called with:', email, userId);
+            updateDebug(`Checking email: ${email}`);
+            
+            const url = '/admin/check-email-uniqueness';
+            const params = new URLSearchParams({
+                email: email,
+                userId: userId || ''
+            });
+            
+            console.log('Making request to:', `${url}?${params}`);
+            updateDebug(`Request URL: ${url}?${params}`);
+            
+            showEmailValidationLoading(inputElement);
+            
+            fetch(`${url}?${params}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                updateDebug(`Response status: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data);
+                updateDebug(`Response data: ${JSON.stringify(data)}`);
+                removeEmailValidationMessage(inputElement);
+                
+                if (data.exists) {
+                    showEmailValidationError(inputElement, 'Cet email est déjà utilisé par un autre utilisateur.');
+                    inputElement.setCustomValidity('Cet email est déjà utilisé par un autre utilisateur.');
+                } else {
+                    showEmailValidationSuccess(inputElement);
+                    inputElement.setCustomValidity('');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors de la vérification de l\'email:', error);
+                updateDebug(`Error: ${error.message}`);
+                removeEmailValidationMessage(inputElement);
+            });
+        }
+        
+        // Setup validation
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded');
+            updateDebug('DOM loaded');
+            
+            const emailInput = document.getElementById('email');
+            let debounceTimer;
+            let originalEmail = emailInput.value;
+            
+            emailInput.addEventListener('input', function() {
+                console.log('Email input changed:', this.value);
+                updateDebug(`Email changed: ${this.value}`);
+                
+                clearTimeout(debounceTimer);
+                const email = this.value.trim();
+                const userId = null; // Pour création
+                
+                removeEmailValidationMessage(this);
+                
+                if (email && email !== originalEmail) {
+                    console.log('Starting email check for:', email);
+                    updateDebug(`Starting check for: ${email}`);
+                    debounceTimer = setTimeout(() => {
+                        checkEmailUniqueness(email, userId, this);
+                    }, 500);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

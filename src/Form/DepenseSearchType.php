@@ -8,6 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\PositiveOrZero;
 
 class DepenseSearchType extends AbstractType
 {
@@ -17,6 +18,11 @@ class DepenseSearchType extends AbstractType
             ->add('montantMin', NumberType::class, [
                 'label' => 'Montant minimum',
                 'required' => false,
+                'constraints' => [
+                    new PositiveOrZero([
+                        'message' => 'Le montant minimum doit être positif ou nul.',
+                    ]),
+                ],
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'Montant minimum'
@@ -25,6 +31,11 @@ class DepenseSearchType extends AbstractType
             ->add('montantMax', NumberType::class, [
                 'label' => 'Montant maximum',
                 'required' => false,
+                'constraints' => [
+                    new PositiveOrZero([
+                        'message' => 'Le montant maximum doit être positif ou nul.',
+                    ]),
+                ],
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'Montant maximum'

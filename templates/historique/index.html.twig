@@ -2,53 +2,440 @@
 
 {% block title %}Historique des Modifications{% endblock %}
 
-{% block body %}
-<div class="container-fluid">
-    <h1 class="h3 mb-2 text-gray-800">Historique des Modifications</h1>
-    <p class="mb-4">Cette page affiche l'historique de toutes les modifications (créations, mises à jour, suppressions) sur les données de l'application.</p>
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --danger-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --border-radius: 15px;
+        }
 
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Journal d'audit</h6>
+        .page-header {
+            background: var(--primary-gradient);
+            color: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 0;
+        }
+
+        .stats-cards {
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            border: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card .icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card.creation .icon { background: var(--success-gradient); }
+        .stat-card.modification .icon { background: var(--warning-gradient); }
+        .stat-card.suppression .icon { background: var(--danger-gradient); }
+
+        .filters-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+            border: none;
+        }
+
+        .audit-table {
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            border: none;
+        }
+
+        .audit-table .card-header {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 1.5rem;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background: #f8f9fa;
+            border: none;
+            font-weight: 600;
+            color: #495057;
+            padding: 1rem;
+        }
+
+        .table tbody td {
+            border: none;
+            border-bottom: 1px solid #e9ecef;
+            padding: 1rem;
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge-action {
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .badge-création { background: var(--success-gradient); color: white; }
+        .badge-creation { background: var(--success-gradient); color: white; }
+        .badge-modification { background: var(--warning-gradient); color: white; }
+        .badge-suppression { background: var(--danger-gradient); color: white; }
+        .badge-secondary { background: #6c757d; color: white; }
+
+        /* Debug - toutes les actions doivent avoir un style */
+        .badge-action {
+            min-width: 100px;
+            text-align: center;
+        }
+
+        /* Fallback pour les badges sans classe spécifique */
+        .badge-action:not(.badge-création):not(.badge-creation):not(.badge-modification):not(.badge-suppression) {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .entity-badge {
+            background: #e9ecef;
+            color: #495057;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+        }
+
+        .details-content {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            white-space: pre-line;
+        }
+
+        .filter-btn {
+            border-radius: 25px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+        }
+
+        .search-box {
+            border-radius: 25px;
+            border: 2px solid #e9ecef;
+            padding: 0.75rem 1.5rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-box:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 1.5rem;
+                text-align: center;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .stat-card {
+                text-align: center;
+                margin-bottom: 1rem;
+            }
+
+            .table-responsive {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid py-4">
+    <!-- En-tête de page -->
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1><i class="bi bi-clock-history me-3"></i>Historique des Modifications</h1>
+                <p>Journal complet de toutes les actions effectuées sur les données de l'application</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div class="d-flex align-items-center justify-content-md-end">
+                    <i class="bi bi-shield-check fs-1 me-3"></i>
+                    <div>
+                        <div class="fw-bold">Audit Sécurisé</div>
+                        <small class="opacity-75">Traçabilité complète</small>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
+    </div>
+
+    <!-- Statistiques rapides -->
+    <div class="stats-cards">
+        <div class="row">
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="stat-card creation">
+                    <div class="icon">
+                        <i class="bi bi-plus-circle"></i>
+                    </div>
+                    <h3 class="mb-1" id="stat-creation">{{ auditData|filter(entry => entry.type == 'Création')|length }}</h3>
+                    <p class="text-muted mb-0">Créations</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="stat-card modification">
+                    <div class="icon">
+                        <i class="bi bi-pencil-square"></i>
+                    </div>
+                    <h3 class="mb-1" id="stat-modification">{{ auditData|filter(entry => entry.type == 'Modification')|length }}</h3>
+                    <p class="text-muted mb-0">Modifications</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="stat-card suppression">
+                    <div class="icon">
+                        <i class="bi bi-trash"></i>
+                    </div>
+                    <h3 class="mb-1" id="stat-suppression">{{ auditData|filter(entry => entry.type == 'Suppression')|length }}</h3>
+                    <p class="text-muted mb-0">Suppressions</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="stat-card">
+                    <div class="icon" style="background: var(--primary-gradient);">
+                        <i class="bi bi-list-ul"></i>
+                    </div>
+                    <h3 class="mb-1">{{ auditData|length }}</h3>
+                    <p class="text-muted mb-0">Total des actions</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtres et recherche -->
+    <div class="filters-card">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h5 class="mb-3"><i class="bi bi-funnel me-2"></i>Filtres</h5>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-primary filter-btn active" data-filter="all">
+                        Toutes les actions
+                    </button>
+                    <button type="button" class="btn btn-outline-success filter-btn" data-filter="Création">
+                        Créations
+                    </button>
+                    <button type="button" class="btn btn-outline-warning filter-btn" data-filter="Modification">
+                        Modifications
+                    </button>
+                    <button type="button" class="btn btn-outline-danger filter-btn" data-filter="Suppression">
+                        Suppressions
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h5 class="mb-3"><i class="bi bi-search me-2"></i>Recherche</h5>
+                <div class="input-group">
+                    <input type="text" class="form-control search-box" id="searchInput"
+                           placeholder="Rechercher par entité, utilisateur ou description...">
+                    <button class="btn btn-outline-primary" type="button" id="clearSearch">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tableau d'audit amélioré -->
+    <div class="audit-table card">
+        <div class="card-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h4 class="mb-0"><i class="bi bi-table me-2"></i>Journal d'Audit Détaillé</h4>
+                </div>
+                <div class="col-auto">
+                    <span class="badge bg-light text-dark" id="resultCount">{{ auditData|length }} enregistrements</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table" id="auditTable">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Type d'Entité</th>
-                            <th>ID Entité</th>
-                            <th>Type d'Action</th>
-                            <th>Utilisateur</th>
-                            <th>Date</th>
-                            <th>Modifications</th>
+                            <th width="8%">
+                                <i class="bi bi-hash me-1"></i>ID
+                            </th>
+                            <th width="15%">
+                                <i class="bi bi-layers me-1"></i>Entité
+                            </th>
+                            <th width="10%">
+                                <i class="bi bi-key me-1"></i>ID Objet
+                            </th>
+                            <th width="12%">
+                                <i class="bi bi-activity me-1"></i>Action
+                            </th>
+                            <th width="12%">
+                                <i class="bi bi-person me-1"></i>Utilisateur
+                            </th>
+                            <th width="15%">
+                                <i class="bi bi-calendar me-1"></i>Date & Heure
+                            </th>
+                            <th width="28%">
+                                <i class="bi bi-info-circle me-1"></i>Détails
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for entry in auditData %}
-                            <tr>
-                                <td>{{ entry.id }}</td>
-                                <td>{{ entry.entity_type }}</td>
-                                <td>{{ entry.object_id }}</td>
+                            <tr class="audit-row"
+                                data-action="{{ entry.type }}"
+                                data-entity="{{ entry.entity_type }}"
+                                data-user="{{ entry.user_id }}"
+                                data-search="{{ entry.entity_type|lower }} {{ entry.type|lower }} {{ entry.user_id|lower }} {{ entry.formatted_body|lower }}">
                                 <td>
-                                    {% if entry.type == 'insert' %}
-                                        Création
-                                    {% elseif entry.type == 'update' %}
-                                        Modification
-                                    {% elseif entry.type == 'delete' %}
-                                        Suppression
-                                    {% else %}
-                                        {{ entry.type }}
-                                    {% endif %}
+                                    <span class="fw-bold text-primary">#{{ entry.id }}</span>
                                 </td>
-                                <td>{{ entry.user_id }}</td>
-                                <td>{{ entry.created_at|date('d/m/Y H:i:s') }}</td>
-                                <td style="white-space: pre-line">{{ entry.formatted_body }}</td>
+                                <td>
+                                    <span class="entity-badge">
+                                        {% if entry.entity_type == 'Alimentation' %}
+                                            <i class="bi bi-cash-coin me-1"></i>
+                                        {% elseif entry.entity_type == 'Dépense' %}
+                                            <i class="bi bi-credit-card me-1"></i>
+                                        {% elseif entry.entity_type == 'Catégorie' %}
+                                            <i class="bi bi-tags me-1"></i>
+                                        {% elseif entry.entity_type == 'Utilisateur' %}
+                                            <i class="bi bi-person me-1"></i>
+                                        {% endif %}
+                                        {{ entry.entity_type }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <code class="text-muted">#{{ entry.object_id }}</code>
+                                </td>
+                                <td>
+                                    {% set badge_class = 'badge-action' %}
+                                    {% if entry.type == 'Création' %}
+                                        {% set badge_class = badge_class ~ ' badge-création' %}
+                                        {% set icon_class = 'bi bi-plus-circle' %}
+                                    {% elseif entry.type == 'Modification' %}
+                                        {% set badge_class = badge_class ~ ' badge-modification' %}
+                                        {% set icon_class = 'bi bi-pencil-square' %}
+                                    {% elseif entry.type == 'Suppression' %}
+                                        {% set badge_class = badge_class ~ ' badge-suppression' %}
+                                        {% set icon_class = 'bi bi-trash' %}
+                                    {% else %}
+                                        {% set badge_class = badge_class ~ ' badge-secondary' %}
+                                        {% set icon_class = 'bi bi-question-circle' %}
+                                    {% endif %}
+
+                                    <span class="badge {{ badge_class }}" title="Type: '{{ entry.type }}' | Class: '{{ badge_class }}'">
+                                        <i class="{{ icon_class }} me-1"></i>
+                                        {{ entry.type }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                            {{ entry.user_id ? entry.user_id|slice(0, 2)|upper : 'SY' }}
+                                        </div>
+                                        <span class="text-muted">{{ entry.user_id ?: 'Système' }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="timeline-item">
+                                        <div class="fw-semibold">{{ entry.created_at|date('d/m/Y') }}</div>
+                                        <small class="text-muted">{{ entry.created_at|date('H:i:s') }}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="details-content">
+                                        {{ entry.formatted_body }}
+                                    </div>
+                                </td>
                             </tr>
                         {% else %}
-                            <tr>
-                                <td colspan="7" class="text-center">Aucun enregistrement d'audit trouvé.</td>
+                            <tr id="noDataRow">
+                                <td colspan="7" class="text-center py-5">
+                                    <div class="text-muted">
+                                        <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+                                        <h5>Aucun enregistrement d'audit trouvé</h5>
+                                        <p>Il n'y a pas encore d'activité à afficher dans le journal d'audit.</p>
+                                    </div>
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -57,4 +444,132 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const searchInput = document.getElementById('searchInput');
+            const clearSearchBtn = document.getElementById('clearSearch');
+            const auditRows = document.querySelectorAll('.audit-row');
+            const resultCount = document.getElementById('resultCount');
+            const noDataRow = document.getElementById('noDataRow');
+
+            // Fonction pour mettre à jour le compteur de résultats
+            function updateResultCount() {
+                const visibleRows = document.querySelectorAll('.audit-row:not([style*="display: none"])');
+                const count = visibleRows.length;
+                resultCount.textContent = `${count} enregistrement${count > 1 ? 's' : ''}`;
+
+                // Afficher/masquer la ligne "aucun résultat"
+                if (noDataRow) {
+                    if (count === 0 && auditRows.length > 0) {
+                        noDataRow.style.display = '';
+                        noDataRow.querySelector('td').innerHTML = `
+                            <div class="text-muted">
+                                <i class="bi bi-search fs-1 d-block mb-3"></i>
+                                <h5>Aucun résultat trouvé</h5>
+                                <p>Essayez de modifier vos critères de recherche ou de filtrage.</p>
+                            </div>
+                        `;
+                    } else {
+                        noDataRow.style.display = 'none';
+                    }
+                }
+            }
+
+            // Fonction de filtrage
+            function filterRows() {
+                const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+                const searchTerm = searchInput.value.toLowerCase().trim();
+
+                auditRows.forEach(row => {
+                    const action = row.dataset.action;
+                    const searchData = row.dataset.search;
+
+                    const matchesFilter = activeFilter === 'all' || action === activeFilter;
+                    const matchesSearch = searchTerm === '' || searchData.includes(searchTerm);
+
+                    if (matchesFilter && matchesSearch) {
+                        row.style.display = '';
+                        // Animation d'apparition
+                        row.style.opacity = '0';
+                        setTimeout(() => {
+                            row.style.transition = 'opacity 0.3s ease';
+                            row.style.opacity = '1';
+                        }, 50);
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                updateResultCount();
+            }
+
+            // Gestion des boutons de filtre
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Retirer la classe active de tous les boutons
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    // Ajouter la classe active au bouton cliqué
+                    this.classList.add('active');
+
+                    // Appliquer le filtre
+                    filterRows();
+                });
+            });
+
+            // Gestion de la recherche
+            searchInput.addEventListener('input', function() {
+                filterRows();
+            });
+
+            // Bouton de nettoyage de la recherche
+            clearSearchBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                filterRows();
+                searchInput.focus();
+            });
+
+            // Raccourci clavier pour la recherche
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'f') {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
+            });
+
+            // Animation au chargement
+            auditRows.forEach((row, index) => {
+                row.style.opacity = '0';
+                row.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    row.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+
+            // Initialiser le compteur
+            updateResultCount();
+
+            // Tooltip pour les actions
+            const tooltips = {
+                'Création': 'Un nouvel enregistrement a été créé dans le système',
+                'Modification': 'Un enregistrement existant a été modifié',
+                'Suppression': 'Un enregistrement a été supprimé du système'
+            };
+
+            document.querySelectorAll('.badge-action').forEach(badge => {
+                const action = badge.textContent.trim();
+                if (tooltips[action]) {
+                    badge.title = tooltips[action];
+                }
+            });
+
+            console.log('Historique page loaded with', auditRows.length, 'audit entries');
+        });
+    </script>
 {% endblock %}

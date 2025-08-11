@@ -4,203 +4,704 @@
 
 {% block stylesheets %}
 {{ parent() }}
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        --danger-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        --card-shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+    }
+
+    .dashboard-header {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 20px 20px;
+        box-shadow: var(--card-shadow);
+    }
+
+    .dashboard-title {
+        font-weight: 700;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .dashboard-subtitle {
+        font-weight: 300;
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+
     .stats-card {
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        background: white;
+        border-radius: 20px;
+        box-shadow: var(--card-shadow);
         border: none;
         overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
     }
+
+    .stats-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--primary-gradient);
+        transition: height 0.3s ease;
+    }
+
     .stats-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        transform: translateY(-10px);
+        box-shadow: var(--card-shadow-hover);
     }
-    .chart-container {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        border: none;
+
+    .stats-card:hover::before {
+        height: 6px;
     }
-    .card-header {
-        border-bottom: none;
-        font-weight: 600;
-        padding: 1.25rem;
-    }
+
+    .stats-card.primary-card::before { background: var(--primary-gradient); }
+    .stats-card.success-card::before { background: var(--success-gradient); }
+    .stats-card.danger-card::before { background: var(--danger-gradient); }
+    .stats-card.warning-card::before { background: var(--warning-gradient); }
+    .stats-card.info-card::before { background: var(--info-gradient); }
+
     .stats-icon {
-        font-size: 2.5rem;
-        opacity: 0.8;
+        width: 80px;
+        height: 80px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
         transition: all 0.3s ease;
     }
+
+    .stats-icon.primary { background: var(--primary-gradient); }
+    .stats-icon.success { background: var(--success-gradient); }
+    .stats-icon.danger { background: var(--danger-gradient); }
+    .stats-icon.warning { background: var(--warning-gradient); }
+    .stats-icon.info { background: var(--info-gradient); }
+
     .stats-card:hover .stats-icon {
-        transform: scale(1.1);
-        opacity: 1;
+        transform: scale(1.1) rotate(5deg);
     }
-    .btn-group .btn {
-        border-radius: 8px;
-        margin: 0 2px;
+
+    .stats-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 0.5rem 0;
     }
+
+    .stats-label {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #7f8c8d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .trend-indicator {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+    }
+
+    .trend-up {
+        background: rgba(39, 174, 96, 0.1);
+        color: #27ae60;
+    }
+
+    .trend-down {
+        background: rgba(231, 76, 60, 0.1);
+        color: #e74c3c;
+    }
+
+    .trend-neutral {
+        background: rgba(149, 165, 166, 0.1);
+        color: #95a5a6;
+    }
+
+    .chart-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: var(--card-shadow);
+        border: none;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .chart-container:hover {
+        box-shadow: var(--card-shadow-hover);
+    }
+
+    .chart-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-bottom: 1px solid #dee2e6;
+        padding: 1.5rem;
+    }
+
     .chart-title {
-        font-size: 1.1rem;
-        color: #495057;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin: 0;
     }
-    .no-data-message {
-        padding: 3rem;
+
+    .period-selector {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: var(--card-shadow);
+        margin-bottom: 2rem;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .period-selector .btn-group {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+    .period-selector .btn {
+        border-radius: 0;
+        padding: 1.25rem 1rem;
+        font-weight: 600;
+        border: none;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+        text-align: center;
+        min-height: 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .period-selector .btn:first-child {
+        border-radius: 15px 0 0 15px;
+    }
+
+    .period-selector .btn:last-child {
+        border-radius: 0 15px 15px 0;
+    }
+
+    .period-selector .btn-check:checked + .btn {
+        background: var(--primary-gradient);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        z-index: 2;
+    }
+
+    .period-selector .btn:not(.btn-check:checked + .btn) {
+        background: #f8f9fa;
         color: #6c757d;
     }
-    .no-data-message i {
-        font-size: 3rem;
-        margin-bottom: 1rem;
+
+    .period-selector .btn:hover:not(.btn-check:checked + .btn) {
+        background: #e9ecef;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
-    .card-subtitle {
-        font-size: 0.9rem;
+
+    .period-selector .btn small {
+        font-size: 0.75rem;
         opacity: 0.8;
+        margin-top: 0.25rem;
     }
-    .export-buttons .btn {
-        padding: 0.5rem 1rem;
+
+    .period-selector .btn-check:checked + .btn small {
+        opacity: 1;
         font-weight: 500;
     }
-    .export-buttons .btn i {
-        margin-right: 0.5rem;
+
+    .period-selector .alert {
+        border-radius: 15px;
+        font-size: 0.9rem;
+        font-weight: 500;
     }
-    .trend-indicator {
-        font-size: 0.8rem;
-        margin-left: 0.5rem;
+
+    @media (max-width: 768px) {
+        .period-selector {
+            padding: 1.5rem 1rem;
+        }
+
+        .period-selector .btn {
+            padding: 1rem 0.5rem;
+            min-height: 70px;
+            font-size: 0.9rem;
+        }
+
+        .period-selector .btn i {
+            font-size: 1.2rem;
+        }
     }
-    .trend-up { color: #28a745; }
-    .trend-down { color: #dc3545; }
-    .period-selector {
+
+    .export-section {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: var(--card-shadow);
         margin-bottom: 2rem;
     }
-    .period-selector .btn {
-        min-width: 100px;
-        font-weight: 500;
+
+    .export-buttons .btn {
+        border-radius: 12px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        margin: 0 0.5rem;
+        transition: all 0.3s ease;
     }
-    .period-selector .btn.active {
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    .export-buttons .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .no-data-message {
+        padding: 4rem 2rem;
+        text-align: center;
+        color: #7f8c8d;
+    }
+
+    .no-data-message i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .chart-controls {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .chart-controls {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .chart-controls .btn {
+        border-radius: 8px;
+        padding: 0.5rem;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+    .chart-controls .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .chart-controls .btn.active {
+        background: var(--primary-gradient) !important;
+        color: white !important;
+        border-color: transparent !important;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .chart-controls .btn.active:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-title {
+            font-size: 2rem;
+        }
+
+        .stats-value {
+            font-size: 2rem;
+        }
+
+        .kpi-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .export-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .export-buttons .btn {
+            margin: 0;
+        }
     }
 </style>
 {% endblock %}
 
 {% block body %}
+<!-- En-tête du tableau de bord -->
+<div class="dashboard-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="dashboard-title">
+                    <i class="bi bi-graph-up-arrow me-3"></i>
+                    Tableau de Bord Financier
+                </h1>
+                <p class="dashboard-subtitle mb-0">
+                    <i class="bi bi-calendar-event me-2"></i>
+                    Analyse des performances financières - {{ "now"|date("d/m/Y") }}
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <div class="export-section d-inline-block">
+                    <div class="export-buttons">
+                        <button class="btn btn-light" onclick="exportToPDF()">
+                            <i class="bi bi-file-earmark-pdf me-2"></i>PDF
+                        </button>
+                        <button class="btn btn-light" onclick="exportToExcel()">
+                            <i class="bi bi-file-earmark-excel me-2"></i>Excel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0"><i class="bi bi-graph-up"></i> Tableau de Bord Financier</h1>
-        <div class="export-buttons">
-            <button class="btn btn-outline-primary me-2" onclick="exportToPDF()"><i class="bi bi-file-pdf"></i> Exporter PDF</button>
-            <button class="btn btn-outline-success" onclick="exportToExcel()"><i class="bi bi-file-excel"></i> Exporter Excel</button>
-        </div>
-    </div>
+    <!-- Sélecteur de période amélioré -->
+    <div class="period-selector">
+        <div class="row align-items-center">
+            <div class="col-md-4">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-calendar-range me-2 text-primary fs-5"></i>
+                    <span class="fw-semibold text-dark">Période d'analyse</span>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="btn-group w-100" role="group" aria-label="Sélection de la période">
+                    <input type="radio" class="btn-check" name="periode" id="periode-jour"
+                           {{ periode == 'jour' ? 'checked' : '' }} data-periode="jour">
+                    <label class="btn btn-outline-primary" for="periode-jour">
+                        <i class="bi bi-calendar-day me-2"></i>
+                        <span class="d-none d-sm-inline">Analyse </span>Quotidienne
+                        <small class="d-block text-muted">Par jour</small>
+                    </label>
 
-    <div class="period-selector text-center">
-        <div class="btn-group" role="group" aria-label="Sélection de la période">
-            <a href="{{ path('app_statistiques', {'periode': 'jour'}) }}" 
-               class="btn btn-outline-primary {{ periode == 'jour' ? 'active' : '' }}" data-periode="jour">
-                <i class="bi bi-calendar-day"></i> Par Jour
-            </a>
-            <a href="{{ path('app_statistiques', {'periode': 'mois'}) }}" 
-               class="btn btn-outline-primary {{ periode == 'mois' ? 'active' : '' }}" data-periode="mois">
-                <i class="bi bi-calendar-month"></i> Par Mois
-            </a>
-            <a href="{{ path('app_statistiques', {'periode': 'annee'}) }}" 
-               class="btn btn-outline-primary {{ periode == 'annee' ? 'active' : '' }}" data-periode="annee">
-                <i class="bi bi-calendar"></i> Par Année
-            </a>
-        </div>
-    </div>
+                    <input type="radio" class="btn-check" name="periode" id="periode-mois"
+                           {{ periode == 'mois' ? 'checked' : '' }} data-periode="mois">
+                    <label class="btn btn-outline-primary" for="periode-mois">
+                        <i class="bi bi-calendar-month me-2"></i>
+                        <span class="d-none d-sm-inline">Analyse </span>Mensuelle
+                        <small class="d-block text-muted">Par mois</small>
+                    </label>
 
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card stats-card text-white bg-success mb-3">
-                <div class="card-body d-flex justify-content-between align-items-center p-4">
-                    <div>
-                        <h6 class="card-subtitle mb-2">Total Alimentations</h6>
-                        <h3 class="card-title mb-0">{{ totalAlimentations|number_format(3, ',', ' ') }} TND</h3>
-                        <small class="trend-indicator {% if trendAlimentations.direction == 'up' %}trend-up{% elseif trendAlimentations.direction == 'down' %}trend-down{% endif %}">
-                            <i class="bi bi-arrow-{{ trendAlimentations.direction }}-right"></i> {{ trendAlimentations.text }} par rapport à la période précédente
-                        </small>
-                    </div>
-                    <i class="bi bi-cash-coin stats-icon"></i>
+                    <input type="radio" class="btn-check" name="periode" id="periode-annee"
+                           {{ periode == 'annee' ? 'checked' : '' }} data-periode="annee">
+                    <label class="btn btn-outline-primary" for="periode-annee">
+                        <i class="bi bi-calendar-year me-2"></i>
+                        <span class="d-none d-sm-inline">Analyse </span>Annuelle
+                        <small class="d-block text-muted">Par année</small>
+                    </label>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card stats-card text-white bg-danger mb-3">
-                <div class="card-body d-flex justify-content-between align-items-center p-4">
-                    <div>
-                        <h6 class="card-subtitle mb-2">Total Dépenses</h6>
-                        <h3 class="card-title mb-0">{{ totalDepenses|number_format(3, ',', ' ') }} TND</h3>
-                        <small class="trend-indicator"><i class="bi bi-arrow-down-right"></i> par rapport à la période précédente</small>
-                    </div>
-                    <i class="bi bi-credit-card stats-icon"></i>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card chart-container mb-4">
-                <div class="card-header bg-white">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="chart-title">
-                            <i class="bi bi-bar-chart-line"></i> 
-                            Évolution des Alimentations 
+        <!-- Indicateur de période active -->
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="alert alert-info border-0 py-2 mb-0" style="background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <span id="periode-description">
                             {% if periode == 'jour' %}
-                                par Jour
+                                Affichage des données par jour - Vue détaillée quotidienne
                             {% elseif periode == 'mois' %}
-                                par Mois
+                                Affichage des données par mois - Vue d'ensemble mensuelle
                             {% else %}
-                                par Année
+                                Affichage des données par année - Vue globale annuelle
                             {% endif %}
                         </span>
-                        <div class="btn-group btn-group-sm">
-                            <button class="btn btn-outline-secondary" onclick="updateChartType('alimentationsChart', 'bar')"><i class="bi bi-bar-chart"></i></button>
-                            <button class="btn btn-outline-secondary" onclick="updateChartType('alimentationsChart', 'line')"><i class="bi bi-graph-up"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Indicateurs de performance (KPI) -->
+    <div class="kpi-grid">
+        <!-- Solde de caisse -->
+        <div class="stats-card primary-card">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                        <div class="stats-label">Solde de Caisse</div>
+                        <div class="stats-value">{{ soldeCaisse|number_format(3, ',', ' ') }}</div>
+                        <div class="text-muted small">TND</div>
+                        {% set soldeStatus = soldeCaisse > 0 ? 'positive' : (soldeCaisse < 0 ? 'negative' : 'neutral') %}
+                        <div class="trend-indicator trend-{{ soldeStatus == 'positive' ? 'up' : (soldeStatus == 'negative' ? 'down' : 'neutral') }}">
+                            <i class="bi bi-{{ soldeStatus == 'positive' ? 'arrow-up' : (soldeStatus == 'negative' ? 'arrow-down' : 'dash') }} me-1"></i>
+                            {{ soldeStatus == 'positive' ? 'Solde positif' : (soldeStatus == 'negative' ? 'Solde négatif' : 'Solde neutre') }}
+                        </div>
+                    </div>
+                    <div class="stats-icon primary">
+                        <i class="bi bi-wallet2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total alimentations -->
+        <div class="stats-card success-card">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                        <div class="stats-label">Total Alimentations</div>
+                        <div class="stats-value">{{ totalAlimentations|number_format(3, ',', ' ') }}</div>
+                        <div class="text-muted small">TND</div>
+                        <div class="trend-indicator trend-{{ trendAlimentations.direction == 'up' ? 'up' : (trendAlimentations.direction == 'down' ? 'down' : 'neutral') }}">
+                            <i class="bi bi-arrow-{{ trendAlimentations.direction == 'up' ? 'up' : (trendAlimentations.direction == 'down' ? 'down' : 'right') }} me-1"></i>
+                            {{ trendAlimentations.text }} vs période précédente
+                        </div>
+                    </div>
+                    <div class="stats-icon success">
+                        <i class="bi bi-cash-coin"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total dépenses -->
+        <div class="stats-card danger-card">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                        <div class="stats-label">Total Dépenses</div>
+                        <div class="stats-value">{{ totalDepenses|number_format(3, ',', ' ') }}</div>
+                        <div class="text-muted small">TND</div>
+                        <div class="trend-indicator trend-neutral">
+                            <i class="bi bi-graph-down me-1"></i>
+                            Suivi des sorties
+                        </div>
+                    </div>
+                    <div class="stats-icon danger">
+                        <i class="bi bi-credit-card"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Solde net (nouveau KPI) -->
+        {% set soldeNet = totalAlimentations - totalDepenses %}
+        <div class="stats-card {{ soldeNet >= 0 ? 'info-card' : 'warning-card' }}">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                        <div class="stats-label">Solde Net</div>
+                        <div class="stats-value">{{ soldeNet|number_format(3, ',', ' ') }}</div>
+                        <div class="text-muted small">TND</div>
+                        <div class="trend-indicator trend-{{ soldeNet >= 0 ? 'up' : 'down' }}">
+                            <i class="bi bi-{{ soldeNet >= 0 ? 'plus-circle' : 'dash-circle' }} me-1"></i>
+                            {{ soldeNet >= 0 ? 'Bénéfice' : 'Déficit' }}
+                        </div>
+                    </div>
+                    <div class="stats-icon {{ soldeNet >= 0 ? 'info' : 'warning' }}">
+                        <i class="bi bi-{{ soldeNet >= 0 ? 'graph-up' : 'graph-down' }}"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section des graphiques -->
+    <div class="row g-4">
+        <!-- Graphique des alimentations -->
+        <div class="col-xl-6 col-lg-12">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="chart-title">
+                                <i class="bi bi-graph-up-arrow me-2 text-success"></i>
+                                Évolution des Alimentations
+                            </h3>
+                            <p class="text-muted small mb-0">
+                                Analyse
+                                {% if periode == 'jour' %}
+                                    quotidienne
+                                {% elseif periode == 'mois' %}
+                                    mensuelle
+                                {% else %}
+                                    annuelle
+                                {% endif %}
+                                des entrées de fonds
+                            </p>
+                        </div>
+                        <div class="chart-controls">
+                            <button class="btn btn-outline-secondary" onclick="updateChartType('alimentationsChart', 'bar')"
+                                    title="Graphique en barres">
+                                <i class="bi bi-bar-chart"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary" onclick="updateChartType('alimentationsChart', 'line')"
+                                    title="Graphique linéaire">
+                                <i class="bi bi-graph-up"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary" onclick="updateChartType('alimentationsChart', 'doughnut')"
+                                    title="Graphique circulaire">
+                                <i class="bi bi-pie-chart"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
-                <div class="card-body p-3">
+                <div class="card-body p-4">
                     {% if alimentationsParMois|length == 0 %}
-                        <div class="text-center no-data-message">
-                            <i class="bi bi-exclamation-circle d-block"></i>
-                            <p class="mb-0">Aucune donnée disponible pour cette période</p>
+                        <div class="no-data-message">
+                            <i class="bi bi-inbox d-block text-muted"></i>
+                            <h5 class="text-muted">Aucune donnée disponible</h5>
+                            <p class="text-muted mb-0">Aucune alimentation trouvée pour cette période</p>
                         </div>
                     {% else %}
-                        <div style="position:relative;height:300px"><canvas id="alimentationsChart"></canvas></div>
+                        <div style="position:relative;height:350px">
+                            <canvas id="alimentationsChart"></canvas>
+                        </div>
+                        <div class="mt-3 text-center">
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle me-1"></i>
+                                {{ alimentationsParMois|length }} période(s) analysée(s)
+                            </small>
+                        </div>
                     {% endif %}
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card chart-container mb-4">
-                <div class="card-header bg-white">
+
+        <!-- Graphique des dépenses -->
+        <div class="col-xl-6 col-lg-12">
+            <div class="chart-container">
+                <div class="chart-header">
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="chart-title">
-                            <i class="bi bi-bar-chart-line"></i> 
-                            Évolution des Dépenses
-                            {% if periode == 'jour' %}
-                                par Jour
-                            {% elseif periode == 'mois' %}
-                                par Mois
-                            {% else %}
-                                par Année
-                            {% endif %}
-                        </span>
-                        <div class="btn-group btn-group-sm">
-                            <button class="btn btn-outline-secondary" onclick="updateChartType('depensesChart', 'bar')"><i class="bi bi-bar-chart"></i></button>
-                            <button class="btn btn-outline-secondary" onclick="updateChartType('depensesChart', 'line')"><i class="bi bi-graph-up"></i></button>
+                        <div>
+                            <h3 class="chart-title">
+                                <i class="bi bi-graph-down-arrow me-2 text-danger"></i>
+                                Évolution des Dépenses
+                            </h3>
+                            <p class="text-muted small mb-0">
+                                Analyse
+                                {% if periode == 'jour' %}
+                                    quotidienne
+                                {% elseif periode == 'mois' %}
+                                    mensuelle
+                                {% else %}
+                                    annuelle
+                                {% endif %}
+                                des sorties de fonds
+                            </p>
+                        </div>
+                        <div class="chart-controls">
+                            <button class="btn btn-outline-secondary" onclick="updateChartType('depensesChart', 'bar')"
+                                    title="Graphique en barres">
+                                <i class="bi bi-bar-chart"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary" onclick="updateChartType('depensesChart', 'line')"
+                                    title="Graphique linéaire">
+                                <i class="bi bi-graph-up"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary" onclick="updateChartType('depensesChart', 'doughnut')"
+                                    title="Graphique circulaire">
+                                <i class="bi bi-pie-chart"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
-                <div class="card-body p-3">
+                <div class="card-body p-4">
                     {% if depensesParMois|length == 0 %}
-                        <div class="text-center no-data-message">
-                            <i class="bi bi-exclamation-circle d-block"></i>
-                            <p class="mb-0">Aucune donnée disponible pour cette période</p>
+                        <div class="no-data-message">
+                            <i class="bi bi-inbox d-block text-muted"></i>
+                            <h5 class="text-muted">Aucune donnée disponible</h5>
+                            <p class="text-muted mb-0">Aucune dépense trouvée pour cette période</p>
                         </div>
                     {% else %}
-                        <div style="position:relative;height:300px"><canvas id="depensesChart"></canvas></div>
+                        <div style="position:relative;height:350px">
+                            <canvas id="depensesChart"></canvas>
+                        </div>
+                        <div class="mt-3 text-center">
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle me-1"></i>
+                                {{ depensesParMois|length }} période(s) analysée(s)
+                            </small>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Graphique comparatif (nouveau) -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="chart-title">
+                                <i class="bi bi-bar-chart-steps me-2 text-primary"></i>
+                                Comparaison Alimentations vs Dépenses
+                            </h3>
+                            <p class="text-muted small mb-0">
+                                Vue d'ensemble des flux financiers par période
+                            </p>
+                        </div>
+                        <div class="chart-controls">
+                            <button class="btn btn-outline-secondary" onclick="updateChartType('comparisonChart', 'bar')"
+                                    title="Graphique en barres">
+                                <i class="bi bi-bar-chart"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary" onclick="updateChartType('comparisonChart', 'line')"
+                                    title="Graphique linéaire">
+                                <i class="bi bi-graph-up"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    {% if alimentationsParMois|length == 0 and depensesParMois|length == 0 %}
+                        <div class="no-data-message">
+                            <i class="bi bi-inbox d-block text-muted"></i>
+                            <h5 class="text-muted">Aucune donnée disponible</h5>
+                            <p class="text-muted mb-0">Aucune transaction trouvée pour cette période</p>
+                        </div>
+                    {% else %}
+                        <div style="position:relative;height:400px">
+                            <canvas id="comparisonChart"></canvas>
+                        </div>
                     {% endif %}
                 </div>
             </div>
@@ -211,70 +712,116 @@
 
 {% block javascripts %}
 {{ parent() }}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 
 <script>
 function initStatsCharts() {
-    // --- tout le code d'initialisation des graphiques ici ---
+    // Configuration globale des graphiques
+    Chart.defaults.font.family = 'Inter, -apple-system, BlinkMacSystemFont, sans-serif';
+    Chart.defaults.font.size = 13;
+    Chart.defaults.color = '#6c757d';
 
-    // Navigation AJAX pour la période
-    document.querySelectorAll('.period-selector .btn').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            const periode = btn.getAttribute('data-periode');
+    // Navigation simple pour la période (sans AJAX pour éviter les problèmes)
+    document.querySelectorAll('.period-selector input[type="radio"]').forEach(function(radio) {
+        radio.addEventListener('change', function(e) {
+            const periode = this.getAttribute('data-periode');
             if (!periode) return;
-            fetch(window.location.pathname + '?periode=' + periode, {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            })
-            .then(resp => resp.json())
-            .then(data => {
-                // Met à jour les datasets des graphiques
-                if (window.alimentationsChart && data.alimentationsParMois) {
-                    window.alimentationsChart.data.labels = data.alimentationsParMois.map(item => item.periode);
-                    window.alimentationsChart.data.datasets[0].data = data.alimentationsParMois.map(item => item.total);
-                    window.alimentationsChart.update();
-                }
-                if (window.depensesChart && data.depensesParMois) {
-                    window.depensesChart.data.labels = data.depensesParMois.map(item => item.periode);
-                    window.depensesChart.data.datasets[0].data = data.depensesParMois.map(item => item.total);
-                    window.depensesChart.update();
-                }
-                // Met à jour les totaux
-                                document.querySelector('.bg-success .card-title').textContent = parseFloat(data.totalAlimentations).toLocaleString('fr-TN', {minimumFractionDigits:3, maximumFractionDigits:3}) + ' TND';
-                                document.querySelector('.bg-danger .card-title').textContent = parseFloat(data.totalDepenses).toLocaleString('fr-TN', {minimumFractionDigits:3, maximumFractionDigits:3}) + ' TND';
-                // Met à jour l'état actif des boutons
-                document.querySelectorAll('.period-selector .btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-            });
+
+            console.log('Changing period to:', periode);
+
+            // Redirection simple vers la nouvelle URL
+            window.location.href = window.location.pathname + '?periode=' + periode;
         });
     });
-    Chart.defaults.font.family = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
-    Chart.defaults.font.size = 12;
 
-    const chartOptions = {
+
+
+    function updateChartsData(data) {
+        // Mise à jour du graphique des alimentations
+        if (window.alimentationsChart && data.alimentationsParMois) {
+            window.alimentationsChart.data.labels = data.alimentationsParMois.map(item => item.periode).reverse();
+            window.alimentationsChart.data.datasets[0].data = data.alimentationsParMois.map(item => item.total).reverse();
+            window.alimentationsChart.update('active');
+        }
+
+        // Mise à jour du graphique des dépenses
+        if (window.depensesChart && data.depensesParMois) {
+            window.depensesChart.data.labels = data.depensesParMois.map(item => item.periode).reverse();
+            window.depensesChart.data.datasets[0].data = data.depensesParMois.map(item => item.total).reverse();
+            window.depensesChart.update('active');
+        }
+
+        // Mise à jour du graphique de comparaison
+        if (window.comparisonChart) {
+            updateComparisonChart(data);
+        }
+    }
+
+    function updateKPIValues(data) {
+        // Mise à jour des valeurs KPI avec animation
+        const kpiCards = document.querySelectorAll('.stats-value');
+        kpiCards.forEach(card => {
+            card.style.transform = 'scale(1.05)';
+            setTimeout(() => {
+                card.style.transform = 'scale(1)';
+            }, 200);
+        });
+
+        // Mise à jour des valeurs
+        const alimentationsValue = document.querySelector('.success-card .stats-value');
+        const depensesValue = document.querySelector('.danger-card .stats-value');
+        const soldeNetValue = document.querySelector('.info-card .stats-value, .warning-card .stats-value');
+
+        if (alimentationsValue) {
+            alimentationsValue.textContent = parseFloat(data.totalAlimentations).toLocaleString('fr-TN', {minimumFractionDigits:3, maximumFractionDigits:3});
+        }
+        if (depensesValue) {
+            depensesValue.textContent = parseFloat(data.totalDepenses).toLocaleString('fr-TN', {minimumFractionDigits:3, maximumFractionDigits:3});
+        }
+        if (soldeNetValue) {
+            const soldeNet = data.totalAlimentations - data.totalDepenses;
+            soldeNetValue.textContent = parseFloat(soldeNet).toLocaleString('fr-TN', {minimumFractionDigits:3, maximumFractionDigits:3});
+        }
+    }
+    // Options communes pour tous les graphiques
+    const commonChartOptions = {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
             legend: {
-                display: false
+                display: true,
+                position: 'bottom',
+                labels: {
+                    usePointStyle: true,
+                    padding: 20,
+                    font: {
+                        size: 12,
+                        weight: '500'
+                    }
+                }
             },
             tooltip: {
                 mode: 'index',
                 intersect: false,
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                titleColor: '#000',
-                bodyColor: '#000',
-                borderColor: '#ddd',
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                titleColor: '#2c3e50',
+                bodyColor: '#2c3e50',
+                borderColor: '#e9ecef',
                 borderWidth: 1,
-                padding: 10,
-                cornerRadius: 4,
+                padding: 15,
+                cornerRadius: 12,
+                displayColors: true,
                 callbacks: {
+                    title: function(context) {
+                        return 'Période: ' + context[0].label;
+                    },
                     label: function(context) {
-                        return context.dataset.label + ': ' + new Intl.NumberFormat('fr-FR', {
+                        return context.dataset.label + ': ' + new Intl.NumberFormat('fr-TN', {
                             style: 'currency',
-                            currency: 'EUR'
+                            currency: 'TND',
+                            minimumFractionDigits: 3
                         }).format(context.parsed.y);
                     }
                 }
@@ -284,20 +831,28 @@ function initStatsCharts() {
             x: {
                 grid: {
                     display: false
+                },
+                ticks: {
+                    font: {
+                        size: 11
+                    }
                 }
             },
             y: {
                 beginAtZero: true,
                 grid: {
-                    color: 'rgba(0, 0, 0, 0.05)'
+                    color: 'rgba(0, 0, 0, 0.05)',
+                    drawBorder: false
                 },
                 ticks: {
+                    font: {
+                        size: 11
+                    },
                     callback: function(value) {
-                        return new Intl.NumberFormat('fr-FR', {
-                            style: 'currency',
-                            currency: 'EUR',
-                            maximumFractionDigits: 0
-                        }).format(value);
+                        return new Intl.NumberFormat('fr-TN', {
+                            notation: 'compact',
+                            compactDisplay: 'short'
+                        }).format(value) + ' TND';
                     }
                 }
             }
@@ -307,11 +862,32 @@ function initStatsCharts() {
             mode: 'index'
         },
         animation: {
-            duration: 1000,
-            easing: 'easeInOutQuart'
+            duration: 1200,
+            easing: 'easeInOutCubic'
         }
     };
 
+    // Options spécifiques pour le graphique de comparaison
+    const comparisonChartOptions = {
+        ...commonChartOptions,
+        plugins: {
+            ...commonChartOptions.plugins,
+            legend: {
+                display: true,
+                position: 'top',
+                labels: {
+                    usePointStyle: true,
+                    padding: 20,
+                    font: {
+                        size: 13,
+                        weight: '600'
+                    }
+                }
+            }
+        }
+    };
+
+    // Données pour le graphique des alimentations
     const alimentationsData = {
         labels: [
             {% for item in alimentationsParMois|reverse %}
@@ -320,15 +896,16 @@ function initStatsCharts() {
         ],
         datasets: [{
             label: 'Alimentations',
-            backgroundColor: 'rgba(40, 167, 69, 0.2)',
-            borderColor: 'rgba(40, 167, 69, 1)',
-            borderWidth: 2,
-            pointBackgroundColor: 'rgba(40, 167, 69, 1)',
+            backgroundColor: 'rgba(17, 153, 142, 0.1)',
+            borderColor: 'rgba(17, 153, 142, 1)',
+            borderWidth: 3,
+            pointBackgroundColor: 'rgba(17, 153, 142, 1)',
             pointBorderColor: '#fff',
+            pointBorderWidth: 2,
             pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: 'rgba(40, 167, 69, 1)',
-            pointRadius: 4,
-            pointHoverRadius: 6,
+            pointHoverBorderColor: 'rgba(17, 153, 142, 1)',
+            pointRadius: 6,
+            pointHoverRadius: 8,
             data: [
                 {% for item in alimentationsParMois|reverse %}
                     {{ item.total|default(0)|number_format(2, '.', '') }},
@@ -339,6 +916,7 @@ function initStatsCharts() {
         }]
     };
 
+    // Données pour le graphique des dépenses
     const depensesData = {
         labels: [
             {% for item in depensesParMois|reverse %}
@@ -347,15 +925,16 @@ function initStatsCharts() {
         ],
         datasets: [{
             label: 'Dépenses',
-            backgroundColor: 'rgba(220, 53, 69, 0.2)',
-            borderColor: 'rgba(220, 53, 69, 1)',
-            borderWidth: 2,
-            pointBackgroundColor: 'rgba(220, 53, 69, 1)',
+            backgroundColor: 'rgba(255, 107, 107, 0.1)',
+            borderColor: 'rgba(255, 107, 107, 1)',
+            borderWidth: 3,
+            pointBackgroundColor: 'rgba(255, 107, 107, 1)',
             pointBorderColor: '#fff',
+            pointBorderWidth: 2,
             pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: 'rgba(220, 53, 69, 1)',
-            pointRadius: 4,
-            pointHoverRadius: 6,
+            pointHoverBorderColor: 'rgba(255, 107, 107, 1)',
+            pointRadius: 6,
+            pointHoverRadius: 8,
             data: [
                 {% for item in depensesParMois|reverse %}
                     {{ item.total|default(0)|number_format(2, '.', '') }},
@@ -366,11 +945,58 @@ function initStatsCharts() {
         }]
     };
 
+    // Données pour le graphique de comparaison
+    function createComparisonData() {
+        const alimentationsMap = new Map();
+        const depensesMap = new Map();
+
+        {% for item in alimentationsParMois %}
+            alimentationsMap.set('{{ item.periode }}', {{ item.total|default(0)|number_format(2, '.', '') }});
+        {% endfor %}
+
+        {% for item in depensesParMois %}
+            depensesMap.set('{{ item.periode }}', {{ item.total|default(0)|number_format(2, '.', '') }});
+        {% endfor %}
+
+        // Créer un ensemble de toutes les périodes
+        const allPeriods = new Set([...alimentationsMap.keys(), ...depensesMap.keys()]);
+        const sortedPeriods = Array.from(allPeriods).sort().reverse();
+
+        return {
+            labels: sortedPeriods,
+            datasets: [
+                {
+                    label: 'Alimentations',
+                    backgroundColor: 'rgba(17, 153, 142, 0.8)',
+                    borderColor: 'rgba(17, 153, 142, 1)',
+                    borderWidth: 2,
+                    data: sortedPeriods.map(period => alimentationsMap.get(period) || 0)
+                },
+                {
+                    label: 'Dépenses',
+                    backgroundColor: 'rgba(255, 107, 107, 0.8)',
+                    borderColor: 'rgba(255, 107, 107, 1)',
+                    borderWidth: 2,
+                    data: sortedPeriods.map(period => depensesMap.get(period) || 0)
+                }
+            ]
+        };
+    }
+
+    // Création des graphiques
     if (document.getElementById('alimentationsChart')) {
         window.alimentationsChart = new Chart(document.getElementById('alimentationsChart'), {
             type: 'line',
             data: alimentationsData,
-            options: chartOptions
+            options: {
+                ...commonChartOptions,
+                plugins: {
+                    ...commonChartOptions.plugins,
+                    legend: {
+                        display: false
+                    }
+                }
+            }
         });
     }
 
@@ -378,90 +1004,388 @@ function initStatsCharts() {
         window.depensesChart = new Chart(document.getElementById('depensesChart'), {
             type: 'line',
             data: depensesData,
-            options: chartOptions
+            options: {
+                ...commonChartOptions,
+                plugins: {
+                    ...commonChartOptions.plugins,
+                    legend: {
+                        display: false
+                    }
+                }
+            }
         });
     }
-}
-document.addEventListener('DOMContentLoaded', initStatsCharts);
-document.addEventListener('turbo:load', initStatsCharts);
 
-function updateChartType(chartId, newType) {
-    const chart = window[chartId];
-    if (chart) {
+    if (document.getElementById('comparisonChart')) {
+        window.comparisonChart = new Chart(document.getElementById('comparisonChart'), {
+            type: 'bar',
+            data: createComparisonData(),
+            options: comparisonChartOptions
+        });
+    }
+
+    // Initialiser les boutons de contrôle des graphiques
+    setTimeout(() => {
+        initializeChartControls();
+    }, 500);
+
+    // Fonction pour initialiser les contrôles des graphiques
+    function initializeChartControls() {
+        console.log('Initializing chart controls...');
+
+        // Pour chaque graphique, définir le bouton actif par défaut
+        const chartConfigs = [
+            { chartId: 'alimentationsChart', defaultType: 'line' },
+            { chartId: 'depensesChart', defaultType: 'line' },
+            { chartId: 'comparisonChart', defaultType: 'bar' }
+        ];
+
+        chartConfigs.forEach(config => {
+            console.log('Setting up controls for:', config.chartId);
+            updateChartButtons(config.chartId, config.defaultType);
+        });
+
+        console.log('Chart controls initialized');
+    }
+
+    // Fonction pour mettre à jour le graphique de comparaison
+    function updateComparisonChart(data) {
+        if (!window.comparisonChart) return;
+
+        const alimentationsMap = new Map();
+        const depensesMap = new Map();
+
+        data.alimentationsParMois.forEach(item => {
+            alimentationsMap.set(item.periode, item.total);
+        });
+
+        data.depensesParMois.forEach(item => {
+            depensesMap.set(item.periode, item.total);
+        });
+
+        const allPeriods = new Set([...alimentationsMap.keys(), ...depensesMap.keys()]);
+        const sortedPeriods = Array.from(allPeriods).sort().reverse();
+
+        window.comparisonChart.data.labels = sortedPeriods;
+        window.comparisonChart.data.datasets[0].data = sortedPeriods.map(period => alimentationsMap.get(period) || 0);
+        window.comparisonChart.data.datasets[1].data = sortedPeriods.map(period => depensesMap.get(period) || 0);
+        window.comparisonChart.update('active');
+    }
+}
+// Initialisation des graphiques
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing charts...');
+    try {
+        initStatsCharts();
+        console.log('Charts initialized successfully');
+    } catch (error) {
+        console.error('Error initializing charts:', error);
+    }
+});
+
+document.addEventListener('turbo:load', function() {
+    console.log('Turbo loaded, initializing charts...');
+    try {
+        initStatsCharts();
+        console.log('Charts initialized successfully (turbo)');
+    } catch (error) {
+        console.error('Error initializing charts (turbo):', error);
+    }
+});
+
+// Fonctions d'export globales
+window.exportToPDF = function() {
+    console.log('Export PDF clicked');
+    try {
+        exportToPDF();
+    } catch (error) {
+        console.error('Error exporting PDF:', error);
+        alert('Erreur lors de l\'export PDF: ' + error.message);
+    }
+};
+
+window.exportToExcel = function() {
+    console.log('Export Excel clicked');
+    try {
+        exportToExcel();
+    } catch (error) {
+        console.error('Error exporting Excel:', error);
+        alert('Erreur lors de l\'export Excel: ' + error.message);
+    }
+};
+
+// Vérification que les fonctions sont bien chargées
+setTimeout(() => {
+    console.log('Available functions:', {
+        updateChartType: typeof window.updateChartType,
+        exportToPDF: typeof window.exportToPDF,
+        exportToExcel: typeof window.exportToExcel,
+        charts: {
+            alimentationsChart: !!window.alimentationsChart,
+            depensesChart: !!window.depensesChart,
+            comparisonChart: !!window.comparisonChart
+        }
+    });
+}, 1000);
+
+// Fonction globale pour changer le type de graphique
+window.updateChartType = function(chartId, newType) {
+    console.log('Attempting to change chart type:', chartId, 'to', newType);
+
+    try {
+        const chart = window[chartId];
+        if (!chart) {
+            console.error('Chart not found:', chartId, 'Available charts:', Object.keys(window).filter(key => key.includes('Chart')));
+            return;
+        }
+
+        console.log('Chart found, current type:', chart.config.type);
+
+        // Méthode simple : changer le type et mettre à jour
         chart.config.type = newType;
-        chart.update('none');
+
+        // Ajuster les options selon le type
+        if (newType === 'doughnut' || newType === 'pie') {
+            // Pour les graphiques circulaires, supprimer les axes
+            chart.options.scales = {};
+            chart.options.plugins.legend.display = true;
+            chart.options.plugins.legend.position = 'right';
+        } else {
+            // Pour bar et line, restaurer les axes
+            chart.options.scales = {
+                x: {
+                    grid: { display: false },
+                    ticks: { font: { size: 11 } }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(0, 0, 0, 0.05)', drawBorder: false },
+                    ticks: {
+                        font: { size: 11 },
+                        callback: function(value) {
+                            return new Intl.NumberFormat('fr-TN', {
+                                notation: 'compact',
+                                compactDisplay: 'short'
+                            }).format(value) + ' TND';
+                        }
+                    }
+                }
+            };
+            chart.options.plugins.legend.display = chartId === 'comparisonChart';
+            chart.options.plugins.legend.position = 'bottom';
+        }
+
+        // Mettre à jour le graphique
+        chart.update('active');
+
+        // Mettre à jour les boutons
+        updateChartButtons(chartId, newType);
+
+        console.log('Chart type changed successfully to:', newType);
+
+    } catch (error) {
+        console.error('Error changing chart type:', error);
+    }
+};
+
+// Fonction pour mettre à jour l'état des boutons
+function updateChartButtons(chartId, activeType) {
+    try {
+        const container = document.getElementById(chartId)?.closest('.chart-container');
+        if (!container) {
+            console.error('Container not found for chart:', chartId);
+            return;
+        }
+
+        const buttons = container.querySelectorAll('.chart-controls .btn');
+        console.log('Found buttons:', buttons.length);
+
+        // Réinitialiser tous les boutons
+        buttons.forEach(btn => {
+            btn.classList.remove('active', 'btn-primary');
+            btn.classList.add('btn-outline-secondary');
+        });
+
+        // Activer le bouton correspondant au type actuel
+        buttons.forEach(btn => {
+            const onclick = btn.getAttribute('onclick');
+            if (onclick && onclick.includes(`'${activeType}'`)) {
+                btn.classList.remove('btn-outline-secondary');
+                btn.classList.add('btn-primary', 'active');
+                console.log('Activated button for type:', activeType);
+            }
+        });
+
+    } catch (error) {
+        console.error('Error updating chart buttons:', error);
     }
 }
 
+// Export PDF amélioré
 function exportToPDF() {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    
-    // En-tête
-    doc.setFontSize(20);
-    doc.text('Rapport Financier', 20, 20);
-    
+    const doc = new jsPDF('p', 'mm', 'a4');
+
+    // En-tête avec style
+    doc.setFillColor(102, 126, 234);
+    doc.rect(0, 0, 210, 40, 'F');
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(24);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Rapport Financier', 20, 25);
+
     doc.setFontSize(12);
-    doc.text(`Date d'édition: ${new Date().toLocaleDateString('fr-FR')}`, 20, 30);
-    
-    // Ligne de séparation
-    doc.setLineWidth(0.5);
-    doc.line(20, 35, 190, 35);
-    
-    // Résumé financier
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Généré le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}`, 20, 35);
+
+    // Contenu
+    doc.setTextColor(0, 0, 0);
+    let yPos = 60;
+
+    // KPI Section
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Indicateurs Clés de Performance', 20, yPos);
+    yPos += 15;
+
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+
+    // Récupération des valeurs KPI
+    const soldeValue = document.querySelector('.primary-card .stats-value').textContent;
+    const alimentationsValue = document.querySelector('.success-card .stats-value').textContent;
+    const depensesValue = document.querySelector('.danger-card .stats-value').textContent;
+    const soldeNetValue = document.querySelector('.info-card .stats-value, .warning-card .stats-value').textContent;
+
+    doc.text(`• Solde de Caisse: ${soldeValue} TND`, 25, yPos);
+    yPos += 8;
+    doc.text(`• Total Alimentations: ${alimentationsValue} TND`, 25, yPos);
+    yPos += 8;
+    doc.text(`• Total Dépenses: ${depensesValue} TND`, 25, yPos);
+    yPos += 8;
+    doc.text(`• Solde Net: ${soldeNetValue} TND`, 25, yPos);
+    yPos += 20;
+
+    // Période d'analyse
+    const periodeActive = document.querySelector('.period-selector .btn.active').textContent.trim();
     doc.setFontSize(14);
-    doc.text('Résumé Financier', 20, 45);
-    
+    doc.setFont('helvetica', 'bold');
+    doc.text('Période d\'Analyse', 20, yPos);
+    yPos += 10;
     doc.setFontSize(12);
-    const totalAlimentations = document.querySelector('.bg-success .card-title').textContent;
-    const totalDepenses = document.querySelector('.bg-danger .card-title').textContent;
-    
-    doc.text(`Total des Alimentations: ${totalAlimentations}`, 30, 55);
-    doc.text(`Total des Dépenses: ${totalDepenses}`, 30, 65);
-    
-    doc.save('rapport-financier.pdf');
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Analyse ${periodeActive.toLowerCase()}`, 25, yPos);
+
+    // Pied de page
+    doc.setFontSize(10);
+    doc.setTextColor(128, 128, 128);
+    doc.text('Document généré automatiquement par le système de gestion financière', 20, 280);
+
+    doc.save(`rapport-financier-${new Date().toISOString().split('T')[0]}.pdf`);
 }
 
+// Export Excel amélioré
 function exportToExcel() {
-    const alimentationsData = window.alimentationsChart.data;
-    const depensesData = window.depensesChart.data;
-    
     const wb = XLSX.utils.book_new();
     wb.Props = {
-        Title: "Rapport Financier",
-        Subject: "Données Financières",
-        Author: "Système de Gestion",
+        Title: "Rapport Financier Détaillé",
+        Subject: "Analyse des Données Financières",
+        Author: "Système de Gestion de Caisse",
         CreatedDate: new Date()
     };
-    
-    // Feuille Alimentations
+
+    // Feuille de résumé KPI
+    const kpiData = [
+        ['TABLEAU DE BORD FINANCIER'],
+        [''],
+        ['Date de génération:', new Date().toLocaleDateString('fr-FR')],
+        ['Heure de génération:', new Date().toLocaleTimeString('fr-FR')],
+        [''],
+        ['INDICATEURS CLÉS'],
+        ['Indicateur', 'Valeur (TND)'],
+        ['Solde de Caisse', document.querySelector('.primary-card .stats-value').textContent.replace(/\s/g, '')],
+        ['Total Alimentations', document.querySelector('.success-card .stats-value').textContent.replace(/\s/g, '')],
+        ['Total Dépenses', document.querySelector('.danger-card .stats-value').textContent.replace(/\s/g, '')],
+        ['Solde Net', document.querySelector('.info-card .stats-value, .warning-card .stats-value').textContent.replace(/\s/g, '')]
+    ];
+
+    const kpiWS = XLSX.utils.aoa_to_sheet(kpiData);
+
+    // Mise en forme de la feuille KPI
+    kpiWS['!cols'] = [{ wch: 25 }, { wch: 20 }];
+    kpiWS['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 1 } }];
+
+    // Feuille Alimentations détaillée
+    const alimentationsData = window.alimentationsChart ? window.alimentationsChart.data : { labels: [], datasets: [{ data: [] }] };
     const alimentationsWS = XLSX.utils.aoa_to_sheet([
-        ['Période', 'Montant (TND)'],
-        ...alimentationsData.labels.map((label, i) => [
-            label,
-            parseFloat(alimentationsData.datasets[0].data[i]).toFixed(2)
-        ])
+        ['ÉVOLUTION DES ALIMENTATIONS'],
+        [''],
+        ['Période', 'Montant (TND)', 'Pourcentage du Total'],
+        ...alimentationsData.labels.map((label, i) => {
+            const value = parseFloat(alimentationsData.datasets[0].data[i]) || 0;
+            const total = alimentationsData.datasets[0].data.reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
+            const percentage = total > 0 ? ((value / total) * 100).toFixed(2) + '%' : '0%';
+            return [label, value.toFixed(3), percentage];
+        })
     ]);
-    
-    // Feuille Dépenses
+
+    // Feuille Dépenses détaillée
+    const depensesData = window.depensesChart ? window.depensesChart.data : { labels: [], datasets: [{ data: [] }] };
     const depensesWS = XLSX.utils.aoa_to_sheet([
-        ['Période', 'Montant (TND)'],
-        ...depensesData.labels.map((label, i) => [
-            label,
-            parseFloat(depensesData.datasets[0].data[i]).toFixed(2)
-        ])
+        ['ÉVOLUTION DES DÉPENSES'],
+        [''],
+        ['Période', 'Montant (TND)', 'Pourcentage du Total'],
+        ...depensesData.labels.map((label, i) => {
+            const value = parseFloat(depensesData.datasets[0].data[i]) || 0;
+            const total = depensesData.datasets[0].data.reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
+            const percentage = total > 0 ? ((value / total) * 100).toFixed(2) + '%' : '0%';
+            return [label, value.toFixed(3), percentage];
+        })
     ]);
-    
-    // Mise en forme
-    ['!cols', '!rows'].forEach(prop => {
-        alimentationsWS[prop] = [{ wch: 15 }, { wch: 15 }];
-        depensesWS[prop] = [{ wch: 15 }, { wch: 15 }];
-    });
-    
+
+    // Feuille de comparaison
+    const comparisonData = window.comparisonChart ? window.comparisonChart.data : { labels: [], datasets: [{ data: [] }, { data: [] }] };
+    const comparisonWS = XLSX.utils.aoa_to_sheet([
+        ['COMPARAISON ALIMENTATIONS VS DÉPENSES'],
+        [''],
+        ['Période', 'Alimentations (TND)', 'Dépenses (TND)', 'Solde Net (TND)', 'Statut'],
+        ...comparisonData.labels.map((label, i) => {
+            const alimentations = parseFloat(comparisonData.datasets[0].data[i]) || 0;
+            const depenses = parseFloat(comparisonData.datasets[1].data[i]) || 0;
+            const soldeNet = alimentations - depenses;
+            const statut = soldeNet >= 0 ? 'Bénéfice' : 'Déficit';
+            return [label, alimentations.toFixed(3), depenses.toFixed(3), soldeNet.toFixed(3), statut];
+        })
+    ]);
+
+    // Configuration des colonnes
+    alimentationsWS['!cols'] = [{ wch: 15 }, { wch: 18 }, { wch: 20 }];
+    depensesWS['!cols'] = [{ wch: 15 }, { wch: 18 }, { wch: 20 }];
+    comparisonWS['!cols'] = [{ wch: 15 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 12 }];
+
+    // Ajout des feuilles au classeur
+    XLSX.utils.book_append_sheet(wb, kpiWS, 'Tableau de Bord');
     XLSX.utils.book_append_sheet(wb, alimentationsWS, 'Alimentations');
     XLSX.utils.book_append_sheet(wb, depensesWS, 'Dépenses');
-    
-    XLSX.writeFile(wb, 'rapport-financier.xlsx');
+    XLSX.utils.book_append_sheet(wb, comparisonWS, 'Comparaison');
+
+    // Sauvegarde avec nom de fichier horodaté
+    const fileName = `rapport-financier-${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(wb, fileName);
 }
+
+// Animation CSS pour le spinner
+const style = document.createElement('style');
+style.textContent = `
+    .spin {
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+`;
+document.head.appendChild(style);
 </script>
 {% endblock %}

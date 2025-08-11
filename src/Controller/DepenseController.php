@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Knp\Component\Pager\PaginatorInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use PhpOffice\PhpSpreadsheet\IOFactory;
+
 use Dompdf\Dompdf; 
 use Dompdf\Options;
 #[Route('/depense')]
@@ -168,6 +168,8 @@ final class DepenseController extends AbstractController
 public function new(Request $request, EntityManagerInterface $entityManager, CaisseService $caisseService): Response
 {
     $depense = new Depense();
+    // Définir la date par défaut à maintenant
+    $depense->setDateAction(new \DateTimeImmutable());
     $form = $this->createForm(DepenseType::class, $depense);
     $form->handleRequest($request);
 
@@ -181,7 +183,10 @@ public function new(Request $request, EntityManagerInterface $entityManager, Cai
         // Mettre à jour le solde de la caisse
         $caisseService->updateSolde(-$depense->getMontant());
 
+        $this->addFlash('success', 'La dépense a été ajoutée avec succès.');
         return $this->redirectToRoute('app_depense_index', [], Response::HTTP_SEE_OTHER);
+    } elseif ($form->isSubmitted() && !$form->isValid()) {
+        $this->addFlash('error', 'Veuillez corriger les erreurs dans le formulaire.');
     }
 
     return $this->render('depense/new.html.twig', [
@@ -209,13 +214,16 @@ public function new(Request $request, EntityManagerInterface $entityManager, Cai
         if ($form->isSubmitted() && $form->isValid()) {
             $newMontant = $depense->getMontant();
             $montantDifference = $originalMontant - $newMontant;
-            
+
             $entityManager->flush();
 
             // Mettre à jour le solde avec la différence
             $caisseService->updateSolde($montantDifference);
 
+            $this->addFlash('success', 'La dépense a été modifiée avec succès.');
             return $this->redirectToRoute('app_depense_index', [], Response::HTTP_SEE_OTHER);
+        } elseif ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash('error', 'Veuillez corriger les erreurs dans le formulaire.');
         }
 
         return $this->render('depense/edit.html.twig', [

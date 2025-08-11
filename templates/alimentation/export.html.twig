@@ -3,77 +3,128 @@
 {% block title %}Exporter les alimentations{% endblock %}
 
 {% block body %}
-    <div class="container-fluid py-4">
-        <div class="card shadow-lg border-0 rounded-3">
-            <div class="card-header bg-primary text-white py-3">
-                <h1 class="h4 mb-0"><i class="fas fa-file-export me-2"></i>Exporter les alimentations</h1>
-            </div>
+<div class="container-fluid py-5">
+    <div class="row justify-content-center">
+        <div class="col-xl-10 col-lg-11">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-primary text-white py-4">
+                    <h1 class="h3 mb-0 text-center">
+                        <i class="fas fa-file-export me-3"></i>Exporter les alimentations
+                    </h1>
+                </div>
 
-            <div class="card-body">
-                {{ form_start(exportForm, {'attr': {'class': 'needs-validation'}}) }}
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="card h-100">
-                                <div class="card-body">
-                                    <h5 class="card-title mb-3">Période d'exportation</h5>
-                                    {{ form_row(exportForm.exportAll) }}
-                                    
-                                    <div id="dateRange" class="mt-3">
-                                        <div class="row g-3">
-                                            <div class="col-md-6">
-                                                {{ form_row(exportForm.dateMin) }}
-                                            </div>
-                                            <div class="col-md-6">
-                                                {{ form_row(exportForm.dateMax) }}
-                                            </div>
+                <div class="card-body p-5">
+                    {{ form_start(exportForm, {'attr': {'class': 'needs-validation'}}) }}
+                    <div class="row g-5">
+                        
+                        <!-- Section Période -->
+                        <div class="col-lg-6">
+                            <div class="card border-0 bg-light h-100">
+                                <div class="card-body p-4">
+                                    <h5 class="card-title text-primary mb-4 d-flex align-items-center">
+                                        <i class="fas fa-calendar-alt me-2"></i>Période d'exportation
+                                    </h5>
+
+                                    <!-- Radios en ligne -->
+                                    <div class="d-flex gap-4 align-items-center mb-3">
+                                        {{ form_widget(exportForm.exportAll[0], {'attr': {'class': 'form-check-input'}}) }}
+                                        {{ form_label(exportForm.exportAll[0], 'Toutes', {'label_attr': {'class': 'form-check-label'}}) }}
+
+                                        {{ form_widget(exportForm.exportAll[1], {'attr': {'class': 'form-check-input'}}) }}
+                                        {{ form_label(exportForm.exportAll[1], 'Période personnalisée', {'label_attr': {'class': 'form-check-label'}}) }}
+                                    </div>
+
+                                    <!-- Dates alignées -->
+                                    <div id="dateRange" class="row g-3 mt-2">
+                                        <div class="col-md-6">
+                                            {{ form_row(exportForm.dateMin, {
+                                                'label': 'Date de début',
+                                                'attr': {'class': 'form-control form-control-lg'},
+                                                'label_attr': {'class': 'form-label fw-semibold'}
+                                            }) }}
+                                        </div>
+                                        <div class="col-md-6">
+                                            {{ form_row(exportForm.dateMax, {
+                                                'label': 'Date de fin',
+                                                'attr': {'class': 'form-control form-control-lg'},
+                                                'label_attr': {'class': 'form-label fw-semibold'}
+                                            }) }}
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="col-md-6">
-    <div class="card h-100 border-info shadow-sm" style="background: #f8fafd; margin-top: 24px;">
-        <div class="card-body">
-            <h5 class="card-title mb-4 text-info" style="font-weight: bold; letter-spacing: 1px;">Format d'exportation</h5>
-            <div class="mb-4">
-                {{ form_row(exportForm.format) }}
-            </div>
-        </div>
-    </div>
-</div>
+                        <!-- Section Format -->
+                        <div class="col-lg-6">
+                            <div class="card border-0 bg-light h-100">
+                                <div class="card-body p-4">
+                                    <h5 class="card-title text-primary mb-4 d-flex align-items-center">
+                                        <i class="fas fa-file-alt me-2"></i>
+                                        Format d'exportation
+                                    </h5>
+
+                                    <div class="format-options">
+                                        {{ form_row(exportForm.format, {
+                                            'attr': {'class': 'form-select form-select-lg'},
+                                            'label_attr': {'class': 'form-label fw-medium mb-3'}
+                                        }) }}
+
+                                        <div class="mt-4 p-3 bg-white rounded border">
+                                            <small class="text-muted">
+                                                <i class="fas fa-info-circle me-1"></i>
+                                                <strong>Formats disponibles :</strong><br>
+                                                • <strong>CSV</strong> : Compatible avec Excel, LibreOffice<br>
+                                                • <strong>Excel</strong> : Fichier .xlsx natif<br>
+                                                • <strong>PDF</strong> : Document imprimable
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="d-flex justify-content-between mt-5 pt-3">
-    <a href="{{ path('app_alimentation_index') }}" class="btn btn-secondary px-4 py-2">
-        <i class="fas fa-arrow-left me-2"></i>Retour
-    </a>
-    <button type="submit" class="btn btn-primary px-4 py-2">
-        <i class="fas fa-file-export me-2"></i>Exporter
-    </button>
-</div>
-                {{ form_end(exportForm) }}
+                    <!-- Boutons d'action -->
+                    <div class="row mt-5">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center p-4 bg-light rounded">
+                                <a href="{{ path('app_alimentation_index') }}" class="btn btn-outline-secondary btn-lg px-4">
+                                    <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+                                </a>
+                                <button type="submit" class="btn btn-primary btn-lg px-5">
+                                    <i class="fas fa-download me-2"></i>Lancer l'exportation
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {{ form_end(exportForm) }}
+                </div>
             </div>
         </div>
     </div>
+</div>
 
-    {% block javascripts %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const exportAllChoices = document.querySelectorAll('input[name="export_options[exportAll]"]');
-            const dateRange = document.getElementById('dateRange');
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const exportAllChoices = document.querySelectorAll('input[name*="exportAll"]');
+    const dateRange = document.getElementById('dateRange');
 
-            function toggleDateRange() {
-                const selectedValue = document.querySelector('input[name="export_options[exportAll]"]:checked').value;
-                dateRange.style.display = selectedValue === '0' ? 'block' : 'none';
-            }
+    function toggleDateRange() {
+        const selectedChoice = document.querySelector('input[name*="exportAll"]:checked');
+        if (selectedChoice) {
+            const showDates = selectedChoice.value === 'false' || selectedChoice.value === '0' || selectedChoice.value === false;
+            dateRange.style.display = showDates ? 'flex' : 'none';
+        }
+    }
 
-            exportAllChoices.forEach(choice => {
-                choice.addEventListener('change', toggleDateRange);
-            });
+    exportAllChoices.forEach(choice => {
+        choice.addEventListener('change', toggleDateRange);
+    });
 
-            toggleDateRange();
-        });
-    </script>
-    {% endblock %}
+    toggleDateRange();
+});
+</script>
+{% endblock %}
 {% endblock %}

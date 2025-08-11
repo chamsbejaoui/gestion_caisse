@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
@@ -55,19 +56,39 @@ final class UserController extends AbstractController
             // Vérification d'unicité
             $existingUser = $userRepository->findOneBy(['email' => $user->getEmail()]);
             if ($existingUser) {
-                $this->addFlash('error', 'Cet email est déjà utilisé.');
+                $this->addFlash('error', 'Cet email est déjà utilisé par un autre compte.');
                 return $this->render('admin/new.html.twig', [
                     'user' => $user,
                     'form' => $form->createView(),
                 ]);
             }
 
+            // Validation du mot de passe obligatoire pour la création
             $plainPassword = $form->get('plainPassword')->getData();
-            if ($plainPassword) {
-                $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
-                $user->setPassword($hashedPassword);
+            if (empty($plainPassword)) {
+                $this->addFlash('error', 'Le mot de passe est obligatoire lors de la création d\'un utilisateur.');
+                return $this->render('admin/new.html.twig', [
+                    'user' => $user,
+                    'form' => $form->createView(),
+                ]);
             }
 
+            // Validation des rôles
+            $roles = $user->getRoles();
+            if (empty($roles) || (count($roles) === 1 && $roles[0] === 'ROLE_USER')) {
+                // Si seulement ROLE_USER par défaut, vérifier qu'un rôle a été sélectionné
+                $formRoles = $form->get('roles')->getData();
+                if (empty($formRoles)) {
+                    $this->addFlash('error', 'Veuillez sélectionner au moins un rôle pour l\'utilisateur.');
+                    return $this->render('admin/new.html.twig', [
+                        'user' => $user,
+                        'form' => $form->createView(),
+                    ]);
+                }
+            }
+
+            $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
+            $user->setPassword($hashedPassword);
             $user->setIsVerified(false);
 
             $entityManager->persist($user);
@@ -88,10 +109,16 @@ final class UserController extends AbstractController
                     'signedUrl' => $signatureComponents->getSignedUrl()
                 ]));
 
-            $this->mailer->send($email);
+            try {
+                $this->mailer->send($email);
+                $this->addFlash('success', 'Utilisateur créé avec succès. Un email de confirmation a été envoyé.');
+            } catch (\Exception $e) {
+                $this->addFlash('warning', 'Utilisateur créé mais l\'email de confirmation n\'a pas pu être envoyé.');
+            }
 
-            $this->addFlash('success', 'Un email de confirmation a été envoyé.');
             return $this->redirectToRoute('app_admin_index');
+        } elseif ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash('error', 'Veuillez corriger les erreurs dans le formulaire.');
         }
 
         return $this->render('admin/new.html.twig', [
@@ -103,32 +130,56 @@ final class UserController extends AbstractController
     #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, User $user, EntityManagerInterface $entityManager, UserRepository $userRepository): Response
     {
+        // Sauvegarder l'email original pour comparaison
+        $originalEmail = $user->getEmail();
+
         $form = $this->createForm(UserForm::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             // Vérification d'unicité si email modifié
             $newEmail = $user->getEmail();
-            $existingUser = $userRepository->findOneBy(['email' => $newEmail]);
+            if ($newEmail !== $originalEmail) {
+                $existingUser = $userRepository->findOneBy(['email' => $newEmail]);
+                if ($existingUser && $existingUser->getId() !== $user->getId()) {
+                    $this->addFlash('error', 'Cet email est déjà utilisé par un autre utilisateur.');
+                    return $this->render('admin/edit.html.twig', [
+                        'user' => $user,
+                        'form' => $form->createView(),
+                    ]);
+                }
+            }
 
-            if ($existingUser && $existingUser->getId() !== $user->getId()) {
-                $this->addFlash('error', 'Cet email est déjà utilisé par un autre utilisateur.');
+            // Validation des rôles
+            $formRoles = $form->get('roles')->getData();
+            if (empty($formRoles)) {
+                $this->addFlash('error', 'Veuillez sélectionner au moins un rôle pour l\'utilisateur.');
                 return $this->render('admin/edit.html.twig', [
                     'user' => $user,
                     'form' => $form->createView(),
                 ]);
             }
 
+            // Gestion du mot de passe
             $plainPassword = $form->get('plainPassword')->getData();
-            if ($plainPassword) {
+            if (!empty($plainPassword)) {
                 $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
                 $user->setPassword($hashedPassword);
+                $this->addFlash('info', 'Le mot de passe a été mis à jour.');
+            }
+
+            // Si l'email a changé, marquer comme non vérifié
+            if ($newEmail !== $originalEmail) {
+                $user->setIsVerified(false);
+                $this->addFlash('info', 'L\'email a été modifié. L\'utilisateur devra le vérifier à nouveau.');
             }
 
             $entityManager->flush();
 
             $this->addFlash('success', 'Utilisateur modifié avec succès.');
             return $this->redirectToRoute('app_admin_index');
+        } elseif ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash('error', 'Veuillez corriger les erreurs dans le formulaire.');
         }
 
         return $this->render('admin/edit.html.twig', [
@@ -219,4 +270,6 @@ final class UserController extends AbstractController
 
         return $this->redirectToRoute('app_admin_index');
     }
+
+
 }

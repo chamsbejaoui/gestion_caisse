@@ -26,3 +26,9 @@
         </div>
     </div>
 {% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('assets/js/form-validation.js') }}"></script>
+    <script src="{{ asset('assets/js/user-validation.js') }}"></script>
+{% endblock %}

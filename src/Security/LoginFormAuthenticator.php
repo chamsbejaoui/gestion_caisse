@@ -28,7 +28,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
     public function __construct(
         private UrlGeneratorInterface $urlGenerator,
         private UserRepository $userRepository,
-        private HttpClientInterface $httpClient // ✅ Injecté pour vérifier Turnstile
+        private HttpClientInterface $httpClient 
     ) {}
 
     public function authenticate(Request $request): Passport
@@ -37,12 +37,12 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         $email = $payload->getString('email');
         $password = $payload->getString('password');
         $csrfToken = $payload->getString('_csrf_token');
-        $captchaToken = $payload->getString('cf-turnstile-response'); // ✅ récupéré automatiquement
+        $captchaToken = $payload->getString('cf-turnstile-response'); 
 
         // ✅ Vérification CAPTCHA Turnstile via API
         $captchaResponse = $this->httpClient->request('POST', 'https://challenges.cloudflare.com/turnstile/v0/siteverify', [
             'body' => [
-                'secret' => '0x4AAAAAABjlKVW6WB7Rfc6OELlstyHh-Ys', // 🔁 Remplace par ta clé secrète
+                'secret' => '0x4AAAAAABjlKVW6WB7Rfc6OELlstyHh-Ys', 
                 'response' => $captchaToken,
                 'remoteip' => $request->getClientIp(),
             ],
