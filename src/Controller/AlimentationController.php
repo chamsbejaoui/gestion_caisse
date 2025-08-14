@@ -107,9 +107,43 @@ final class AlimentationController extends AbstractController
                     break;
 
                 case 'pdf':
+                    // Calculs statistiques pour le PDF
+                    $dataRows = array_slice($exportData, 1);
+                    $totalAmount = array_sum(array_column($dataRows, 2));
+                    $avgAmount = count($dataRows) > 0 ? $totalAmount / count($dataRows) : 0;
+                    $maxAmount = count($dataRows) > 0 ? max(array_column($dataRows, 2)) : 0;
+                    $minAmount = count($dataRows) > 0 ? min(array_column($dataRows, 2)) : 0;
+
+                    // Statistiques par période
+                    $statsParPeriode = [];
+                    foreach ($dataRows as $row) {
+                        $date = \DateTime::createFromFormat('d/m/Y H:i:s', $row[0]);
+                        if ($date) {
+                            $periode = $date->format('Y-m');
+                            if (!isset($statsParPeriode[$periode])) {
+                                $statsParPeriode[$periode] = ['count' => 0, 'total' => 0];
+                            }
+                            $statsParPeriode[$periode]['count']++;
+                            $statsParPeriode[$periode]['total'] += $row[2];
+                        }
+                    }
+
                     $html = $this->renderView('alimentation/export_pdf.html.twig', [
                         'headers' => $exportData[0],
-                        'data' => array_slice($exportData, 1)
+                        'data' => $dataRows,
+                        'stats' => [
+                            'total' => $totalAmount,
+                            'average' => $avgAmount,
+                            'max' => $maxAmount,
+                            'min' => $minAmount,
+                            'count' => count($dataRows),
+                            'parPeriode' => $statsParPeriode
+                        ],
+                        'dateRange' => [
+                            'min' => $data['dateMin'] ?? null,
+                            'max' => $data['dateMax'] ?? null,
+                            'exportAll' => $exportAll
+                        ]
                     ]);
 
                     $options = new options();

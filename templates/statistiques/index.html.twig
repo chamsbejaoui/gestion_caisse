@@ -1097,7 +1097,13 @@ document.addEventListener('turbo:load', function() {
 window.exportToPDF = function() {
     console.log('Export PDF clicked');
     try {
-        exportToPDF();
+        // Test simple d'abord
+        if (!window.jspdf) {
+            throw new Error('jsPDF library not loaded');
+        }
+
+        console.log('jsPDF available, calling generatePDFReport...');
+        generatePDFReport();
     } catch (error) {
         console.error('Error exporting PDF:', error);
         alert('Erreur lors de l\'export PDF: ' + error.message);
@@ -1107,7 +1113,7 @@ window.exportToPDF = function() {
 window.exportToExcel = function() {
     console.log('Export Excel clicked');
     try {
-        exportToExcel();
+        generateExcelReport();
     } catch (error) {
         console.error('Error exporting Excel:', error);
         alert('Erreur lors de l\'export Excel: ' + error.message);
@@ -1120,13 +1126,41 @@ setTimeout(() => {
         updateChartType: typeof window.updateChartType,
         exportToPDF: typeof window.exportToPDF,
         exportToExcel: typeof window.exportToExcel,
+        jsPDF: !!window.jspdf,
         charts: {
             alimentationsChart: !!window.alimentationsChart,
             depensesChart: !!window.depensesChart,
             comparisonChart: !!window.comparisonChart
         }
     });
+
+    // Test de jsPDF
+    if (window.jspdf) {
+        console.log('jsPDF version:', window.jspdf.jsPDF.version);
+    } else {
+        console.error('jsPDF not loaded!');
+    }
 }, 1000);
+
+// Fonction de test PDF simple
+window.testPDF = function() {
+    console.log('Testing PDF generation...');
+    try {
+        if (!window.jspdf) {
+            throw new Error('jsPDF not loaded');
+        }
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text('Test PDF', 20, 20);
+        doc.save('test.pdf');
+        console.log('Test PDF generated successfully');
+        alert('Test PDF généré avec succès!');
+    } catch (error) {
+        console.error('Test PDF failed:', error);
+        alert('Test PDF échoué: ' + error.message);
+    }
+};
 
 // Fonction globale pour changer le type de graphique
 window.updateChartType = function(chartId, newType) {
@@ -1221,158 +1255,326 @@ function updateChartButtons(chartId, activeType) {
     }
 }
 
-// Export PDF amélioré
-function exportToPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('p', 'mm', 'a4');
+// Export PDF amélioré avec design professionnel
+function generatePDFReport() {
+    console.log('Starting enhanced PDF generation...');
 
-    // En-tête avec style
-    doc.setFillColor(102, 126, 234);
-    doc.rect(0, 0, 210, 40, 'F');
+    // Vérifier que jsPDF est disponible
+    if (!window.jspdf) {
+        console.error('jsPDF library not loaded');
+        alert('Erreur: Bibliothèque PDF non chargée. Veuillez recharger la page.');
+        return;
+    }
 
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(24);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Rapport Financier', 20, 25);
+    try {
+        const { jsPDF } = window.jspdf;
+        console.log('jsPDF loaded, creating document...');
 
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Généré le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}`, 20, 35);
+        const doc = new jsPDF('p', 'mm', 'a4');
+        console.log('PDF document created successfully');
 
-    // Contenu
-    doc.setTextColor(0, 0, 0);
-    let yPos = 60;
+        // === EN-TÊTE PROFESSIONNEL ===
+        // Fond dégradé pour l'en-tête
+        doc.setFillColor(102, 126, 234);
+        doc.rect(0, 0, 210, 50, 'F');
 
-    // KPI Section
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Indicateurs Clés de Performance', 20, yPos);
-    yPos += 15;
+        // Titre principal
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(24);
+        doc.setFont('helvetica', 'bold');
+        doc.text('📊 TABLEAU DE BORD FINANCIER', 20, 25);
 
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'normal');
+        // Sous-titre
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'normal');
+        const currentDate = new Date();
+        doc.text(`Rapport genere le ${currentDate.toLocaleDateString('fr-FR')} a ${currentDate.toLocaleTimeString('fr-FR')}`, 20, 35);
 
-    // Récupération des valeurs KPI
-    const soldeValue = document.querySelector('.primary-card .stats-value').textContent;
-    const alimentationsValue = document.querySelector('.success-card .stats-value').textContent;
-    const depensesValue = document.querySelector('.danger-card .stats-value').textContent;
-    const soldeNetValue = document.querySelector('.info-card .stats-value, .warning-card .stats-value').textContent;
+        // Ligne décorative
+        doc.setFontSize(10);
+        doc.text('Systeme de Gestion de Caisse - Analyse Complete', 20, 42);
 
-    doc.text(`• Solde de Caisse: ${soldeValue} TND`, 25, yPos);
-    yPos += 8;
-    doc.text(`• Total Alimentations: ${alimentationsValue} TND`, 25, yPos);
-    yPos += 8;
-    doc.text(`• Total Dépenses: ${depensesValue} TND`, 25, yPos);
-    yPos += 8;
-    doc.text(`• Solde Net: ${soldeNetValue} TND`, 25, yPos);
-    yPos += 20;
+        // === RÉCUPÉRATION DES DONNÉES ===
+        console.log('Retrieving KPI values...');
+        const soldeElement = document.querySelector('.primary-card .stats-value');
+        const alimentationsElement = document.querySelector('.success-card .stats-value');
+        const depensesElement = document.querySelector('.danger-card .stats-value');
+        const soldeNetElement = document.querySelector('.info-card .stats-value, .warning-card .stats-value');
 
-    // Période d'analyse
-    const periodeActive = document.querySelector('.period-selector .btn.active').textContent.trim();
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Période d\'Analyse', 20, yPos);
-    yPos += 10;
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Analyse ${periodeActive.toLowerCase()}`, 25, yPos);
+        const soldeValue = soldeElement ? soldeElement.textContent.trim() : 'N/A';
+        const alimentationsValue = alimentationsElement ? alimentationsElement.textContent.trim() : 'N/A';
+        const depensesValue = depensesElement ? depensesElement.textContent.trim() : 'N/A';
+        const soldeNetValue = soldeNetElement ? soldeNetElement.textContent.trim() : 'N/A';
 
-    // Pied de page
-    doc.setFontSize(10);
-    doc.setTextColor(128, 128, 128);
-    doc.text('Document généré automatiquement par le système de gestion financière', 20, 280);
+        // Récupération de la période active
+        const periodeChecked = document.querySelector('.period-selector input[type="radio"]:checked');
+        const periodeValue = periodeChecked ? periodeChecked.getAttribute('data-periode') || 'mois' : 'mois';
+        const periodeTexts = {
+            'jour': 'Quotidienne (par jour)',
+            'mois': 'Mensuelle (par mois)',
+            'annee': 'Annuelle (par annee)'
+        };
+        const periodeActive = periodeTexts[periodeValue] || 'Mensuelle (par mois)';
 
-    doc.save(`rapport-financier-${new Date().toISOString().split('T')[0]}.pdf`);
+        console.log('Data retrieved:', { soldeValue, alimentationsValue, depensesValue, soldeNetValue, periodeActive });
+
+        // === SECTION INFORMATIONS GÉNÉRALES ===
+        doc.setTextColor(0, 0, 0);
+        let yPos = 65;
+
+        // Cadre pour les informations générales
+        doc.setDrawColor(200, 200, 200);
+        doc.setFillColor(248, 249, 250);
+        doc.rect(15, yPos - 5, 180, 25, 'FD');
+
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(102, 126, 234);
+        doc.text('ℹ️  INFORMATIONS GENERALES', 20, yPos + 5);
+
+        doc.setFontSize(10);
+        doc.setTextColor(0, 0, 0);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Periode d'analyse: ${periodeActive}`, 20, yPos + 12);
+        doc.text(`Date de generation: ${currentDate.toLocaleDateString('fr-FR')} a ${currentDate.toLocaleTimeString('fr-FR')}`, 20, yPos + 18);
+
+        yPos += 35;
+
+        // === SECTION INDICATEURS CLÉS ===
+        doc.setFillColor(40, 167, 69);
+        doc.rect(15, yPos - 5, 180, 8, 'F');
+
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text('INDICATEURS CLES DE PERFORMANCE', 20, yPos);
+
+        yPos += 15;
+        doc.setTextColor(0, 0, 0);
+        doc.setFont('helvetica', 'normal');
+
+        // KPI en colonnes avec calculs avancés
+        const soldeNum = parseFloat(soldeValue.replace(/[^\d.-]/g, '')) || 0;
+        const alimentationsNum = parseFloat(alimentationsValue.replace(/[^\d.-]/g, '')) || 0;
+        const depensesNum = parseFloat(depensesValue.replace(/[^\d.-]/g, '')) || 0;
+        const soldeNetNum = alimentationsNum - depensesNum;
+
+        // Affichage des KPI
+        doc.setFontSize(11);
+        doc.text('Solde de Caisse: ' + soldeValue + ' TND', 20, yPos);
+        yPos += 8;
+        doc.text('Total Alimentations: ' + alimentationsValue + ' TND', 20, yPos);
+        yPos += 8;
+        doc.text('Total Depenses: ' + depensesValue + ' TND', 20, yPos);
+        yPos += 8;
+        doc.text('Solde Net: ' + soldeNetValue + ' TND', 20, yPos);
+        yPos += 15;
+
+        // Ratios et analyses
+        const ratioDepensesAlimentations = alimentationsNum > 0 ? (depensesNum / alimentationsNum * 100) : 0;
+        const tauxEconomie = alimentationsNum > 0 ? (soldeNetNum / alimentationsNum * 100) : 0;
+
+        doc.setFont('helvetica', 'bold');
+        doc.text('RATIOS FINANCIERS:', 20, yPos);
+        yPos += 10;
+        doc.setFont('helvetica', 'normal');
+        doc.text('Ratio Depenses/Alimentations: ' + ratioDepensesAlimentations.toFixed(1) + '%', 25, yPos);
+        yPos += 8;
+        doc.text('Taux d\'economie: ' + tauxEconomie.toFixed(1) + '%', 25, yPos);
+
+        // Pied de page
+        doc.setFontSize(8);
+        doc.setTextColor(128, 128, 128);
+        doc.text('Document confidentiel - Systeme de Gestion de Caisse', 20, 280);
+        doc.text('Genere automatiquement le ' + currentDate.toLocaleDateString('fr-FR'), 20, 285);
+
+        // Sauvegarde du PDF
+        const fileName = `tableau-bord-financier-${new Date().toISOString().split('T')[0]}.pdf`;
+        console.log('Saving enhanced PDF as:', fileName);
+        doc.save(fileName);
+        console.log('Enhanced PDF saved successfully');
+
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        alert('Erreur lors de la génération du PDF: ' + error.message);
+    }
 }
 
-// Export Excel amélioré
-function exportToExcel() {
+// Export Excel amélioré avec analyses détaillées
+function generateExcelReport() {
+    console.log('Starting enhanced Excel generation...');
+
+    // Récupération des éléments KPI avec vérification de null
+    const soldeElement = document.querySelector('.primary-card .stats-value');
+    const alimentationsElement = document.querySelector('.success-card .stats-value');
+    const depensesElement = document.querySelector('.danger-card .stats-value');
+    const soldeNetElement = document.querySelector('.info-card .stats-value, .warning-card .stats-value');
+
+    // Récupération de la période
+    const periodeChecked = document.querySelector('.period-selector input[type="radio"]:checked');
+    const periodeValue = periodeChecked ? periodeChecked.getAttribute('data-periode') || 'mois' : 'mois';
+    const periodeTexts = {
+        'jour': 'Quotidienne',
+        'mois': 'Mensuelle',
+        'annee': 'Annuelle'
+    };
+
     const wb = XLSX.utils.book_new();
     wb.Props = {
-        Title: "Rapport Financier Détaillé",
-        Subject: "Analyse des Données Financières",
+        Title: "Tableau de Bord Financier Complet",
+        Subject: "Analyse Détaillée des Données Financières",
         Author: "Système de Gestion de Caisse",
         CreatedDate: new Date()
     };
 
-    // Feuille de résumé KPI
-    const kpiData = [
-        ['TABLEAU DE BORD FINANCIER'],
+    // === FEUILLE 1: RÉSUMÉ EXÉCUTIF ===
+    const soldeValue = soldeElement ? soldeElement.textContent.replace(/\s/g, '') : '0';
+    const alimentationsValue = alimentationsElement ? alimentationsElement.textContent.replace(/\s/g, '') : '0';
+    const depensesValue = depensesElement ? depensesElement.textContent.replace(/\s/g, '') : '0';
+    const soldeNetValue = soldeNetElement ? soldeNetElement.textContent.replace(/\s/g, '') : '0';
+
+    // Calculs statistiques avancés
+    const soldeNum = parseFloat(soldeValue) || 0;
+    const alimentationsNum = parseFloat(alimentationsValue) || 0;
+    const depensesNum = parseFloat(depensesValue) || 0;
+    const soldeNetNum = alimentationsNum - depensesNum;
+
+    const ratioDepensesAlimentations = alimentationsNum > 0 ? (depensesNum / alimentationsNum * 100) : 0;
+    const tauxEconomie = alimentationsNum > 0 ? (soldeNetNum / alimentationsNum * 100) : 0;
+
+    const resumeData = [
+        ['🏦 TABLEAU DE BORD FINANCIER COMPLET'],
         [''],
+        ['📅 Informations Générales'],
         ['Date de génération:', new Date().toLocaleDateString('fr-FR')],
         ['Heure de génération:', new Date().toLocaleTimeString('fr-FR')],
+        ['Période d\'analyse:', periodeTexts[periodeValue] || 'Mensuelle'],
         [''],
-        ['INDICATEURS CLÉS'],
-        ['Indicateur', 'Valeur (TND)'],
-        ['Solde de Caisse', document.querySelector('.primary-card .stats-value').textContent.replace(/\s/g, '')],
-        ['Total Alimentations', document.querySelector('.success-card .stats-value').textContent.replace(/\s/g, '')],
-        ['Total Dépenses', document.querySelector('.danger-card .stats-value').textContent.replace(/\s/g, '')],
-        ['Solde Net', document.querySelector('.info-card .stats-value, .warning-card .stats-value').textContent.replace(/\s/g, '')]
+        ['💰 INDICATEURS CLÉS'],
+        ['Indicateur', 'Valeur (TND)', 'Statut'],
+        ['Solde de Caisse', soldeValue, soldeNum > 0 ? '✅ Positif' : soldeNum < 0 ? '❌ Négatif' : '⚠️ Neutre'],
+        ['Total Alimentations', alimentationsValue, '📈 Entrées'],
+        ['Total Dépenses', depensesValue, '📉 Sorties'],
+        ['Solde Net', soldeNetValue, soldeNetNum > 0 ? '✅ Bénéfice' : soldeNetNum < 0 ? '❌ Déficit' : '⚠️ Équilibre'],
+        [''],
+        ['📊 RATIOS ET ANALYSES'],
+        ['Métrique', 'Valeur', 'Interprétation'],
+        ['Ratio Dépenses/Alimentations', ratioDepensesAlimentations.toFixed(1) + '%', ratioDepensesAlimentations < 80 ? '✅ Bon' : ratioDepensesAlimentations < 100 ? '⚠️ Attention' : '❌ Critique'],
+        ['Taux d\'économie', tauxEconomie.toFixed(1) + '%', tauxEconomie > 20 ? '✅ Excellent' : tauxEconomie > 0 ? '⚠️ Correct' : '❌ Déficitaire'],
+        [''],
+        ['🎯 RECOMMANDATIONS'],
+        ['Évaluation globale:', soldeNetNum > 0 ? '✅ Situation saine' : soldeNetNum === 0 ? '⚠️ Situation équilibrée' : '❌ Situation critique'],
+        ['Action prioritaire:', soldeNetNum > 0 ? 'Maintenir la surveillance' : soldeNetNum === 0 ? 'Optimiser les coûts' : 'Réduire les dépenses urgentes']
     ];
 
-    const kpiWS = XLSX.utils.aoa_to_sheet(kpiData);
+    const resumeWS = XLSX.utils.aoa_to_sheet(resumeData);
 
-    // Mise en forme de la feuille KPI
-    kpiWS['!cols'] = [{ wch: 25 }, { wch: 20 }];
-    kpiWS['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 1 } }];
+    // Mise en forme de la feuille résumé
+    resumeWS['!cols'] = [{ wch: 30 }, { wch: 20 }, { wch: 25 }];
+    resumeWS['!merges'] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: 2 } }, // Titre principal
+        { s: { r: 2, c: 0 }, e: { r: 2, c: 2 } }, // Section infos générales
+        { s: { r: 7, c: 0 }, e: { r: 7, c: 2 } }, // Section indicateurs
+        { s: { r: 14, c: 0 }, e: { r: 14, c: 2 } }, // Section ratios
+        { s: { r: 19, c: 0 }, e: { r: 19, c: 2 } }  // Section recommandations
+    ];
 
-    // Feuille Alimentations détaillée
+    // === FEUILLE 2: ÉVOLUTION DES ALIMENTATIONS ===
     const alimentationsData = window.alimentationsChart ? window.alimentationsChart.data : { labels: [], datasets: [{ data: [] }] };
-    const alimentationsWS = XLSX.utils.aoa_to_sheet([
-        ['ÉVOLUTION DES ALIMENTATIONS'],
+    const alimentationsDetailData = [
+        ['📈 ÉVOLUTION DES ALIMENTATIONS'],
         [''],
-        ['Période', 'Montant (TND)', 'Pourcentage du Total'],
+        ['Période', 'Montant (TND)', 'Pourcentage du Total', 'Tendance'],
         ...alimentationsData.labels.map((label, i) => {
             const value = parseFloat(alimentationsData.datasets[0].data[i]) || 0;
-            const total = alimentationsData.datasets[0].data.reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
-            const percentage = total > 0 ? ((value / total) * 100).toFixed(2) + '%' : '0%';
-            return [label, value.toFixed(3), percentage];
+            const percentage = alimentationsNum > 0 ? (value / alimentationsNum * 100).toFixed(1) : '0';
+            const prevValue = i > 0 ? parseFloat(alimentationsData.datasets[0].data[i-1]) || 0 : value;
+            return [label, value.toFixed(3), percentage, trend];
         })
-    ]);
+    ];
 
-    // Feuille Dépenses détaillée
+    const alimentationsWS = XLSX.utils.aoa_to_sheet(alimentationsDetailData);
+    alimentationsWS['!cols'] = [{ wch: 15 }, { wch: 15 }, { wch: 18 }, { wch: 15 }];
+
+    // === FEUILLE 3: ÉVOLUTION DES DÉPENSES ===
     const depensesData = window.depensesChart ? window.depensesChart.data : { labels: [], datasets: [{ data: [] }] };
-    const depensesWS = XLSX.utils.aoa_to_sheet([
-        ['ÉVOLUTION DES DÉPENSES'],
+    const depensesDetailData = [
+        ['📉 ÉVOLUTION DES DÉPENSES'],
         [''],
-        ['Période', 'Montant (TND)', 'Pourcentage du Total'],
+        ['Période', 'Montant (TND)', 'Pourcentage du Total', 'Tendance'],
         ...depensesData.labels.map((label, i) => {
             const value = parseFloat(depensesData.datasets[0].data[i]) || 0;
-            const total = depensesData.datasets[0].data.reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
-            const percentage = total > 0 ? ((value / total) * 100).toFixed(2) + '%' : '0%';
-            return [label, value.toFixed(3), percentage];
+            const percentage = depensesNum > 0 ? (value / depensesNum * 100).toFixed(1) : '0';
+            const prevValue = i > 0 ? parseFloat(depensesData.datasets[0].data[i-1]) || 0 : value;
+            const trend = value > prevValue ? '📈 Hausse' : value < prevValue ? '📉 Baisse' : '➡️ Stable';
+            return [label, value.toFixed(3), percentage + '%', trend];
         })
-    ]);
+    ];
 
-    // Feuille de comparaison
+    const depensesWS = XLSX.utils.aoa_to_sheet(depensesDetailData);
+    depensesWS['!cols'] = [{ wch: 15 }, { wch: 15 }, { wch: 18 }, { wch: 15 }];
+
+    // === FEUILLE 4: COMPARAISON DÉTAILLÉE ===
     const comparisonData = window.comparisonChart ? window.comparisonChart.data : { labels: [], datasets: [{ data: [] }, { data: [] }] };
-    const comparisonWS = XLSX.utils.aoa_to_sheet([
-        ['COMPARAISON ALIMENTATIONS VS DÉPENSES'],
+    const comparisonDetailData = [
+        ['⚖️ COMPARAISON ALIMENTATIONS VS DÉPENSES'],
         [''],
-        ['Période', 'Alimentations (TND)', 'Dépenses (TND)', 'Solde Net (TND)', 'Statut'],
+        ['Période', 'Alimentations (TND)', 'Dépenses (TND)', 'Solde Net (TND)', 'Ratio D/A (%)', 'Statut', 'Recommandation'],
         ...comparisonData.labels.map((label, i) => {
             const alimentations = parseFloat(comparisonData.datasets[0].data[i]) || 0;
             const depenses = parseFloat(comparisonData.datasets[1].data[i]) || 0;
             const soldeNet = alimentations - depenses;
-            const statut = soldeNet >= 0 ? 'Bénéfice' : 'Déficit';
-            return [label, alimentations.toFixed(3), depenses.toFixed(3), soldeNet.toFixed(3), statut];
+            const ratio = alimentations > 0 ? (depenses / alimentations * 100).toFixed(1) : '0';
+            const statut = soldeNet >= 0 ? '✅ Bénéfice' : '❌ Déficit';
+            const recommandation = soldeNet >= 0 ? 'Maintenir' : 'Optimiser';
+            return [label, alimentations.toFixed(3), depenses.toFixed(3), soldeNet.toFixed(3), ratio + '%', statut, recommandation];
         })
-    ]);
+    ];
 
-    // Configuration des colonnes
-    alimentationsWS['!cols'] = [{ wch: 15 }, { wch: 18 }, { wch: 20 }];
-    depensesWS['!cols'] = [{ wch: 15 }, { wch: 18 }, { wch: 20 }];
-    comparisonWS['!cols'] = [{ wch: 15 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 12 }];
+    const comparisonWS = XLSX.utils.aoa_to_sheet(comparisonDetailData);
+
+    // === FEUILLE 5: ANALYSE AVANCÉE ===
+    const analyseData = [
+        ['🔍 ANALYSE FINANCIÈRE AVANCÉE'],
+        [''],
+        ['MÉTRIQUES CALCULÉES'],
+        ['Métrique', 'Valeur', 'Seuil Optimal', 'Évaluation'],
+        ['Ratio Dépenses/Alimentations', ratioDepensesAlimentations.toFixed(1) + '%', '< 80%', ratioDepensesAlimentations < 80 ? '✅ Excellent' : ratioDepensesAlimentations < 100 ? '⚠️ Acceptable' : '❌ Critique'],
+        ['Taux d\'économie', tauxEconomie.toFixed(1) + '%', '> 20%', tauxEconomie > 20 ? '✅ Excellent' : tauxEconomie > 0 ? '⚠️ Correct' : '❌ Déficitaire'],
+        ['Solde Net/Solde Caisse', soldeNum > 0 ? (soldeNetNum / soldeNum * 100).toFixed(1) + '%' : 'N/A', '> 0%', soldeNetNum > 0 ? '✅ Positif' : '❌ Négatif'],
+        [''],
+        ['PRÉVISIONS ET TENDANCES'],
+        ['Indicateur', 'Tendance', 'Prévision'],
+        ['Évolution générale', soldeNetNum > 0 ? '📈 Positive' : soldeNetNum < 0 ? '📉 Négative' : '➡️ Stable', soldeNetNum > 0 ? 'Croissance continue' : 'Amélioration nécessaire'],
+        ['Recommandation prioritaire', '', soldeNetNum > 0 ? 'Maintenir la performance' : 'Réduire les dépenses'],
+        [''],
+        ['ALERTES ET ACTIONS'],
+        ['Type d\'alerte', 'Statut', 'Action recommandée'],
+        ['Solde critique', soldeNum < 1000 ? '🚨 Critique' : soldeNum < 5000 ? '⚠️ Attention' : '✅ Normal', soldeNum < 1000 ? 'Alimentation urgente' : 'Surveillance continue'],
+        ['Dépenses excessives', ratioDepensesAlimentations > 100 ? '🚨 Critique' : ratioDepensesAlimentations > 80 ? '⚠️ Attention' : '✅ Normal', ratioDepensesAlimentations > 100 ? 'Réduction immédiate' : 'Optimisation continue']
+    ];
+
+    const analyseWS = XLSX.utils.aoa_to_sheet(analyseData);
+
+    // Configuration des colonnes pour toutes les feuilles
+    resumeWS['!cols'] = [{ wch: 30 }, { wch: 20 }, { wch: 25 }];
+    alimentationsWS['!cols'] = [{ wch: 15 }, { wch: 15 }, { wch: 18 }, { wch: 15 }];
+    depensesWS['!cols'] = [{ wch: 15 }, { wch: 15 }, { wch: 18 }, { wch: 15 }];
+    comparisonWS['!cols'] = [{ wch: 12 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 12 }, { wch: 12 }, { wch: 15 }];
+    analyseWS['!cols'] = [{ wch: 25 }, { wch: 15 }, { wch: 20 }];
 
     // Ajout des feuilles au classeur
-    XLSX.utils.book_append_sheet(wb, kpiWS, 'Tableau de Bord');
-    XLSX.utils.book_append_sheet(wb, alimentationsWS, 'Alimentations');
-    XLSX.utils.book_append_sheet(wb, depensesWS, 'Dépenses');
-    XLSX.utils.book_append_sheet(wb, comparisonWS, 'Comparaison');
+    XLSX.utils.book_append_sheet(wb, resumeWS, '📊 Résumé Exécutif');
+    XLSX.utils.book_append_sheet(wb, alimentationsWS, '📈 Alimentations');
+    XLSX.utils.book_append_sheet(wb, depensesWS, '📉 Dépenses');
+    XLSX.utils.book_append_sheet(wb, comparisonWS, '⚖️ Comparaison');
+    XLSX.utils.book_append_sheet(wb, analyseWS, '🔍 Analyse Avancée');
 
     // Sauvegarde avec nom de fichier horodaté
-    const fileName = `rapport-financier-${new Date().toISOString().split('T')[0]}.xlsx`;
+    const fileName = `tableau-bord-financier-complet-${new Date().toISOString().split('T')[0]}.xlsx`;
+    console.log('Saving enhanced Excel as:', fileName);
     XLSX.writeFile(wb, fileName);
+    console.log('Enhanced Excel saved successfully');
 }
 
 // Animation CSS pour le spinner
