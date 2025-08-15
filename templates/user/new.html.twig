@@ -15,7 +15,8 @@
                     </div>
 
                     <div class="card-body p-4">
-                        {{ include('user/_form.html.twig') }}
+                        {% set edit_mode = false %}
+                        {% include 'user/_base_form.html.twig' with {'edit_mode': edit_mode} %}
                     </div>
                 </div>
             </div>

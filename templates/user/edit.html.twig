@@ -15,7 +15,8 @@
                     </div>
 
                     <div class="card-body p-4">
-                        {{ include('user/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+                        {% set edit_mode = true %}
+                        {% include 'user/_base_form.html.twig' with {'edit_mode': edit_mode, 'button_label': 'Mettre à jour'} %}
                     </div>
 
                     <div class="card-footer bg-light py-3">

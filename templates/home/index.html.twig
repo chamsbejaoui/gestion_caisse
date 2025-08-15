@@ -3,63 +3,131 @@
 {% block title %}Accueil{% endblock %}
 
 {% block body %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-lg border-0 rounded-3">
-                <div class="card-header bg-primary text-white py-3">
-                    <h1 class="h4 mb-0"><i class="fas fa-home me-2"></i>Tableau de bord</h1>
-                </div>
+<div class="py-5">
+    <!-- En-tête de bienvenue avec animation -->
+    <div class="welcome-section mb-5 text-center">
+        <h1 class="display-4 fw-bold text-primary mb-3">Bienvenue sur votre tableau de bord</h1>
+        <div class="d-flex justify-content-center align-items-center bg-light p-4 rounded-pill shadow-sm mx-auto" style="max-width: 500px;">
+            <div class="bg-primary rounded-circle p-3 me-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                <i class="fas fa-user-circle fa-2x text-white"></i>
+            </div>
+            <div class="text-start">
+                <h5 class="mb-1">Bonjour!</h5>
+                <p class="mb-0 text-muted">Vous êtes connecté en tant que <strong>{{ app.user.email }}</strong></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Statistiques rapides -->    
+    <div class="row mb-5 g-4">
+        <div class="col-md-3">
+            <div class="card border-0 rounded-4 shadow-sm h-100 stat-card">
                 <div class="card-body p-4">
-                    <div class="alert alert-info border-0 rounded-3 shadow-sm">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-user-circle fa-2x me-3"></i>
-                            <div>
-                                <h5 class="mb-1">Bienvenue!</h5>
-                                <p class="mb-0">Vous êtes connecté en tant que <strong>{{ app.user.email }}</strong></p>
-                            </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-primary bg-opacity-10 rounded-circle p-3 me-3">
+                            <i class="fas fa-money-bill-wave text-primary"></i>
                         </div>
+                        <h5 class="card-title mb-0">Dépenses</h5>
                     </div>
-                    
-                    <div class="row g-4 mt-3">
-                        <div class="col-md-6">
-                            <div class="card h-100 border-0 shadow-sm hover-card">
-                                <div class="card-body text-center p-4">
-                                    <div class="feature-icon bg-primary bg-gradient text-white rounded-circle p-3 mb-3 mx-auto" style="width: 60px; height: 60px;">
-                                        <i class="fas fa-user-circle fa-2x"></i>
-                                    </div>
-                                    <h5 class="card-title">Mon profil</h5>
-                                    <p class="card-text text-muted">Gérez vos informations personnelles et vos préférences</p>
-                                    <a href="#" class="btn btn-outline-primary mt-3 w-100">
-                                        <i class="fas fa-edit me-2"></i>Modifier le profil
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card h-100 border-0 shadow-sm hover-card">
-                                <div class="card-body text-center p-4">
-                                    <div class="feature-icon bg-primary bg-gradient text-white rounded-circle p-3 mb-3 mx-auto" style="width: 60px; height: 60px;">
-                                        <i class="fas fa-cog fa-2x"></i>
-                                    </div>
-                                    <h5 class="card-title">Paramètres</h5>
-                                    <p class="card-text text-muted">Personnalisez les paramètres de votre compte</p>
-                                    <a href="#" class="btn btn-outline-primary mt-3 w-100">
-                                        <i class="fas fa-sliders-h me-2"></i>Configurer
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <h3 class="fw-bold mb-0">0 €</h3>
+                    <p class="text-muted small">Ce mois-ci</p>
+                    <a href="{{ path('app_depense_index') }}" class="stretched-link"></a>
                 </div>
-                <div class="card-footer bg-light text-center py-3">
-                    <a href="{{ path('app_logout') }}" class="btn btn-danger">
-                        <i class="fas fa-sign-out-alt me-2"></i>Déconnexion
-                    </a>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 rounded-4 shadow-sm h-100 stat-card">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-success bg-opacity-10 rounded-circle p-3 me-3">
+                            <i class="fas fa-coins text-success"></i>
+                        </div>
+                        <h5 class="card-title mb-0">Alimentations</h5>
+                    </div>
+                    <h3 class="fw-bold mb-0">0 €</h3>
+                    <p class="text-muted small">Ce mois-ci</p>
+                    <a href="{{ path('app_alimentation_index') }}" class="stretched-link"></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 rounded-4 shadow-sm h-100 stat-card">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-info bg-opacity-10 rounded-circle p-3 me-3">
+                            <i class="fas fa-chart-line text-info"></i>
+                        </div>
+                        <h5 class="card-title mb-0">Statistiques</h5>
+                    </div>
+                    <p class="text-muted mb-0">Visualisez vos données</p>
+                    <a href="{{ path('app_statistiques') }}" class="stretched-link"></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 rounded-4 shadow-sm h-100 stat-card">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-warning bg-opacity-10 rounded-circle p-3 me-3">
+                            <i class="fas fa-history text-warning"></i>
+                        </div>
+                        <h5 class="card-title mb-0">Historique</h5>
+                    </div>
+                    <p class="text-muted mb-0">Consultez vos activités</p>
+                    <a href="{{ path('app_historique') }}" class="stretched-link"></a>
                 </div>
             </div>
         </div>
     </div>
+    
+    <!-- Actions principales -->    
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card border-0 rounded-4 shadow-sm h-100 hover-card">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-primary rounded-circle p-3 me-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="fas fa-user-circle fa-2x text-white"></i>
+                        </div>
+                        <div>
+                            <h4 class="card-title mb-0">Mon profil</h4>
+                            <p class="text-muted mb-0">Gérez vos informations personnelles</p>
+                        </div>
+                    </div>
+                    <p class="card-text">Modifiez vos informations personnelles, changez votre mot de passe et personnalisez vos préférences.</p>
+                    <a href="{{ path('app_profile') }}" class="btn btn-primary mt-3">
+                        <i class="fas fa-edit me-2"></i>Modifier le profil
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 rounded-4 shadow-sm h-100 hover-card">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-primary rounded-circle p-3 me-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="fas fa-cog fa-2x text-white"></i>
+                        </div>
+                        <div>
+                            <h4 class="card-title mb-0">Paramètres</h4>
+                            <p class="text-muted mb-0">Configurez votre application</p>
+                        </div>
+                    </div>
+                    <p class="card-text">Personnalisez les paramètres de votre compte et configurez les options de l'application selon vos besoins.</p>
+                    <div class="d-flex gap-2 mt-3">
+                        <a href="#" class="btn btn-primary flex-grow-1">
+                            <i class="fas fa-sliders-h me-2"></i>Configurer
+                        </a>
+                        <a href="{{ path('app_logout') }}" class="btn btn-outline-danger">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
 </div>
 
 <style>

@@ -6,9 +6,12 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white text-center">
-                    <h2 class="h4 mb-0">Connexion au système</h2>
+            <div class="card shadow-lg border-0 rounded-3 hover-card">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <div class="d-flex justify-content-center align-items-center">
+                        <img src="/images/progress-logo.svg" alt="Progress Engineering" class="me-2" style="height: 30px; filter: brightness(0) invert(1);">
+                        <h2 class="h4 mb-0">Connexion au système</h2>
+                    </div>
                 </div>
                 <div class="card-body p-4">
                     {% if error %}
@@ -27,19 +30,24 @@
                     {% endif %}
 
                     <form method="post">
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <label for="inputEmail" class="form-label">Adresse email</label>
                             <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                <span class="input-group-text bg-primary text-white"><i class="fas fa-envelope"></i></span>
                                 <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
                             </div>
                         </div>
                         
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <label for="inputPassword" class="form-label">Mot de passe</label>
                             <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <span class="input-group-text bg-primary text-white"><i class="fas fa-lock"></i></span>
                                 <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+                            </div>
+                            <div class="mt-2 text-end w-100">
+                                <a href="{{ path('app_forgot_password_request') }}" class="text-primary">
+                                    <i class="fas fa-question-circle me-1"></i> Mot de passe oublié ?
+                                </a>
                             </div>
                         </div>
                         
@@ -49,8 +57,8 @@
                             <div class="cf-turnstile" data-sitekey="0x4AAAAAABjlKRCDgTxT4Nfl"></div>
                         </div>
 
-                        <div class="d-grid gap-2">
-                            <button class="btn btn-primary" type="submit">
+                        <div class="d-grid gap-2 mt-4">
+                            <button class="btn btn-primary btn-lg" type="submit">
                                 <i class="fas fa-sign-in-alt me-2"></i> Connexion
                             </button>
                         </div>
