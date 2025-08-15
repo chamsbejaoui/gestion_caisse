@@ -53,39 +53,11 @@ final class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Vérification d'unicité
-            $existingUser = $userRepository->findOneBy(['email' => $user->getEmail()]);
-            if ($existingUser) {
-                $this->addFlash('error', 'Cet email est déjà utilisé par un autre compte.');
-                return $this->render('admin/new.html.twig', [
-                    'user' => $user,
-                    'form' => $form->createView(),
-                ]);
-            }
-
-            // Validation du mot de passe obligatoire pour la création
+            // Récupération du mot de passe
             $plainPassword = $form->get('plainPassword')->getData();
-            if (empty($plainPassword)) {
-                $this->addFlash('error', 'Le mot de passe est obligatoire lors de la création d\'un utilisateur.');
-                return $this->render('admin/new.html.twig', [
-                    'user' => $user,
-                    'form' => $form->createView(),
-                ]);
-            }
 
-            // Validation des rôles
+            // Récupération des rôles
             $roles = $user->getRoles();
-            if (empty($roles) || (count($roles) === 1 && $roles[0] === 'ROLE_USER')) {
-                // Si seulement ROLE_USER par défaut, vérifier qu'un rôle a été sélectionné
-                $formRoles = $form->get('roles')->getData();
-                if (empty($formRoles)) {
-                    $this->addFlash('error', 'Veuillez sélectionner au moins un rôle pour l\'utilisateur.');
-                    return $this->render('admin/new.html.twig', [
-                        'user' => $user,
-                        'form' => $form->createView(),
-                    ]);
-                }
-            }
 
             $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
             $user->setPassword($hashedPassword);
@@ -117,8 +89,8 @@ final class UserController extends AbstractController
             }
 
             return $this->redirectToRoute('app_admin_index');
-        } elseif ($form->isSubmitted() && !$form->isValid()) {
-            $this->addFlash('error', 'Veuillez corriger les erreurs dans le formulaire.');
+        } elseif ($form->isSubmitted()) {
+            // Pas de validation d'erreurs
         }
 
         return $this->render('admin/new.html.twig', [
@@ -133,32 +105,14 @@ final class UserController extends AbstractController
         // Sauvegarder l'email original pour comparaison
         $originalEmail = $user->getEmail();
 
-        $form = $this->createForm(UserForm::class, $user);
+        $form = $this->createForm(UserForm::class, $user, [
+            'validation_groups' => ['Default', 'profile']
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Vérification d'unicité si email modifié
+            // Récupération de l'email
             $newEmail = $user->getEmail();
-            if ($newEmail !== $originalEmail) {
-                $existingUser = $userRepository->findOneBy(['email' => $newEmail]);
-                if ($existingUser && $existingUser->getId() !== $user->getId()) {
-                    $this->addFlash('error', 'Cet email est déjà utilisé par un autre utilisateur.');
-                    return $this->render('admin/edit.html.twig', [
-                        'user' => $user,
-                        'form' => $form->createView(),
-                    ]);
-                }
-            }
-
-            // Validation des rôles
-            $formRoles = $form->get('roles')->getData();
-            if (empty($formRoles)) {
-                $this->addFlash('error', 'Veuillez sélectionner au moins un rôle pour l\'utilisateur.');
-                return $this->render('admin/edit.html.twig', [
-                    'user' => $user,
-                    'form' => $form->createView(),
-                ]);
-            }
 
             // Gestion du mot de passe
             $plainPassword = $form->get('plainPassword')->getData();
@@ -175,11 +129,8 @@ final class UserController extends AbstractController
             }
 
             $entityManager->flush();
-
             $this->addFlash('success', 'Utilisateur modifié avec succès.');
             return $this->redirectToRoute('app_admin_index');
-        } elseif ($form->isSubmitted() && !$form->isValid()) {
-            $this->addFlash('error', 'Veuillez corriger les erreurs dans le formulaire.');
         }
 
         return $this->render('admin/edit.html.twig', [

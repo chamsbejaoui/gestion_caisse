@@ -8,6 +8,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use DH\Auditor\Provider\Doctrine\Auditing\Annotation\Auditable;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[Auditable]
@@ -22,14 +23,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
-    #[Assert\NotBlank(message: 'Veuillez renseigner votre email.')]
-    #[Assert\Email(message: "L'email '{{ value }}' n'est pas une adresse valide.")]
+    #[Assert\NotBlank(message: 'Veuillez entrer une adresse email')]
+    #[Assert\Email(message: "L'email n'est pas valide")]
     private ?string $email = null;
 
     /**
      * @var list<string> The user roles
      */
     #[ORM\Column]
+    #[Assert\Count(
+        min: 1,
+        minMessage: 'Veuillez sélectionner au moins un rôle',
+        groups: ['registration', 'profile']
+    )]
     private array $roles = [];
 
     /**
@@ -38,8 +44,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[Assert\NotBlank(message: 'Veuillez saisir un mot de passe.', groups: ['registration', 'password_change'])]
-    #[Assert\Length(min: 6, minMessage: 'Votre mot de passe doit contenir au moins {{ limit }} caractères.', groups: ['registration', 'password_change'])]
+    #[Assert\NotBlank(
+        message: 'Veuillez saisir un mot de passe',
+        groups: ['registration', 'password_change']
+    )]
+    #[Assert\Length(
+        min: 8,
+        minMessage: 'Le mot de passe doit contenir au moins {{ limit }} caractères',
+        groups: ['registration', 'password_change']
+    )]
+    #[Assert\Regex(
+        pattern: '/[a-z]/',
+        message: 'Le mot de passe doit contenir au moins une lettre minuscule',
+        groups: ['registration', 'password_change']
+    )]
+    #[Assert\Regex(
+        pattern: '/[A-Z]/',
+        message: 'Le mot de passe doit contenir au moins une lettre majuscule',
+        groups: ['registration', 'password_change']
+    )]
+    #[Assert\Regex(
+        pattern: '/\d/',
+        message: 'Le mot de passe doit contenir au moins un chiffre',
+        groups: ['registration', 'password_change']
+    )]
     private ?string $plainPassword = null;
      #[ORM\Column(type: 'boolean')]
     private bool $isVerified = false;
