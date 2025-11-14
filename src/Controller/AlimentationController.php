@@ -128,6 +128,23 @@ final class AlimentationController extends AbstractController
                         }
                     }
 
+                    $dateMinObj = null;
+                    $dateMaxObj = null;
+                    if (!empty($data['dateMin'])) {
+                        if ($data['dateMin'] instanceof \DateTimeInterface) {
+                            $dateMinObj = $data['dateMin'];
+                        } else {
+                            $dateMinObj = \DateTime::createFromFormat('d/m/Y H:i:s', (string)$data['dateMin']) ?: \DateTime::createFromFormat('Y-m-d H:i:s', (string)$data['dateMin']) ?: new \DateTime((string)$data['dateMin']);
+                        }
+                    }
+                    if (!empty($data['dateMax'])) {
+                        if ($data['dateMax'] instanceof \DateTimeInterface) {
+                            $dateMaxObj = $data['dateMax'];
+                        } else {
+                            $dateMaxObj = \DateTime::createFromFormat('d/m/Y H:i:s', (string)$data['dateMax']) ?: \DateTime::createFromFormat('Y-m-d H:i:s', (string)$data['dateMax']) ?: new \DateTime((string)$data['dateMax']);
+                        }
+                    }
+
                     $html = $this->renderView('alimentation/export_pdf.html.twig', [
                         'headers' => $exportData[0],
                         'data' => $dataRows,
@@ -140,8 +157,8 @@ final class AlimentationController extends AbstractController
                             'parPeriode' => $statsParPeriode
                         ],
                         'dateRange' => [
-                            'min' => $data['dateMin'] ?? null,
-                            'max' => $data['dateMax'] ?? null,
+                            'min' => $dateMinObj,
+                            'max' => $dateMaxObj,
                             'exportAll' => $exportAll
                         ]
                     ]);

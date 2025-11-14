@@ -214,7 +214,7 @@
                 {% if dateRange.exportAll %}
                     Toutes les données
                 {% else %}
-                    Du {{ dateRange.dateMin|date('d/m/Y') }} au {{ dateRange.dateMax|date('d/m/Y') }}
+                    Du {{ dateRange.min|date('d/m/Y') }} au {{ dateRange.max|date('d/m/Y') }}
                 {% endif %}
             </p>
         </div>
@@ -395,14 +395,13 @@
                         {% else %}
                             <td>
                                 {% if loop.index == 1 %}
-                                    {% set dateObj = cell|date('Y-m-d') %}
                                     <div style="display: flex; align-items: center;">
                                         <div style="background: #e6f3fb; color: #0077b3; width: 24px; height: 24px; border-radius: 4px; display: flex; align-items: center; justify-content: center; margin-right: 8px; font-size: 10px; font-weight: 600;">
-                                            {{ cell|date('d') }}
+                                            {{ cell|slice(0, 2) }}
                                         </div>
                                         <div>
-                                            <div style="font-weight: 500;">{{ cell|date('H:i') }}</div>
-                                            <div style="font-size: 8px; color: #a0a0a0; line-height: 1;">{{ cell|date('M Y') }}</div>
+                                            <div style="font-weight: 500;">{{ cell|slice(11, 5) }}</div>
+                                            <div style="font-size: 8px; color: #a0a0a0; line-height: 1;">{{ cell|slice(3, 2) ~ '/' ~ cell|slice(6, 4) }}</div>
                                         </div>
                                     </div>
                                 {% else %}

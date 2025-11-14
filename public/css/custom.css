@@ -95,9 +95,34 @@ body {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
+.navbar .container-fluid {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.navbar-nav .nav-item {
+    margin-left: 0.25rem;
+    margin-right: 0.25rem;
+}
+
 .navbar-brand {
     font-weight: 700;
     letter-spacing: 0.5px;
+}
+
+.navbar-brand .brand-text {
+    white-space: nowrap;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.navbar .navbar-collapse {
+    flex-grow: 1;
+}
+
+.navbar .navbar-nav {
+    margin-left: 0;
 }
 
 .nav-link {
@@ -673,6 +698,9 @@ footer h5::after {
 @media (max-width: 768px) {
     .navbar-brand {
         font-size: 1.1rem;
+    }
+    .navbar-brand .brand-text {
+        max-width: 140px;
     }
     
     .container {

@@ -15,21 +15,23 @@
 
         {% block javascripts %}
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="{{ asset('js/theme.js') }}"></script>
+            <script src="{{ asset('js/theme.js') }}"></script>
         {% endblock %}
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 sticky-top">
             <div class="container">
-                <a class="navbar-brand d-flex align-items-center" href="{{ path('app_home') }}">
+                <a class="navbar-brand d-flex align-items-center flex-shrink-0" href="{{ path('app_home') }}">
                     <img src="/images/progress-logo.svg" alt="Progress Engineering" class="me-2" style="height: 40px;">
-                    <span>Système de Gestion Progress</span>
+                    <span class="brand-text">Système de Gestion Progress</span>
                 </a>
+
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto">
+
+                <div class="collapse navbar-collapse w-100" id="navbarNav">
+                    <ul class="navbar-nav ms-auto"> <!-- correction ici -->
                         <li class="nav-item mx-1">
                             <a class="nav-link rounded px-3 py-2" href="{{ path('app_home') }}">
                                 <i class="fas fa-home me-2"></i> Accueil
@@ -40,6 +42,7 @@
                                 <i class="fas fa-chart-bar me-2"></i> Statistiques
                             </a>
                         </li>
+
                         {% if is_granted('ROLE_ADMIN') %}
                             <li class="nav-item mx-1">
                                 <a class="nav-link rounded px-3 py-2" href="{{ path('app_admin_index') }}">
@@ -47,19 +50,19 @@
                                 </a>
                             </li>
                             <li class="nav-item mx-1">
-                             <a class="nav-link rounded px-3 py-2" href="{{ path('app_categorie_index') }}">
-                                  <i class="fas fa-tags me-2"></i> Catégories
-                                 </a>
+                                <a class="nav-link rounded px-3 py-2" href="{{ path('app_categorie_index') }}">
+                                    <i class="fas fa-tags me-2"></i> Catégories
+                                </a>
                             </li>
                             <li class="nav-item mx-1">
-                             <a class="nav-link rounded px-3 py-2" href="{{ path('app_depense_index') }}">
-                                  <i class="fas fa-money-bill-wave me-2"></i> Dépenses
-                                 </a>
+                                <a class="nav-link rounded px-3 py-2" href="{{ path('app_depense_index') }}">
+                                    <i class="fas fa-money-bill-wave me-2"></i> Dépenses
+                                </a>
                             </li>
                             <li class="nav-item mx-1">
-                             <a class="nav-link rounded px-3 py-2" href="{{ path('app_alimentation_index') }}">
-                                  <i class="fas fa-coins me-2"></i> Alimentations
-                                 </a>
+                                <a class="nav-link rounded px-3 py-2" href="{{ path('app_alimentation_index') }}">
+                                    <i class="fas fa-coins me-2"></i> Alimentations
+                                </a>
                             </li>
                             <li class="nav-item mx-1">
                                 <a class="nav-link rounded px-3 py-2" href="{{ path('app_historique') }}">
@@ -73,29 +76,39 @@
                             </li>
                         {% endif %}
                     </ul>
-                    <div class="navbar-nav me-2">
+
+                    <div class="navbar-nav ms-3">
                         <div class="theme-toggle" id="theme-toggle" title="Changer de thème">
                             <i class="fas fa-sun" id="theme-icon"></i>
                         </div>
                     </div>
+
                     {% if app.user %}
-                        <div class="navbar-nav">
+                        <div class="navbar-nav ms-3">
                             <div class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
                                     <div class="bg-white rounded-circle p-1 me-2 d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
                                         <i class="fas fa-user text-primary"></i>
                                     </div>
                                     <span>{{ app.user.email }}</span>
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="navbarDropdown">
-                                    <li><a class="dropdown-item py-2" href="#"><i class="fas fa-user-circle me-2"></i>Mon profil</a></li>
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                    <li>
+                                        <a class="dropdown-item py-2" href="{{ path('app_profile') }}">
+                                            <i class="fas fa-user-circle me-2"></i>Mon profil
+                                        </a>
+                                    </li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item py-2 text-danger" href="{{ path('app_logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Déconnexion</a></li>
+                                    <li>
+                                        <a class="dropdown-item py-2 text-danger" href="{{ path('app_logout') }}">
+                                            <i class="fas fa-sign-out-alt me-2"></i>Déconnexion
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
                     {% else %}
-                        <div class="navbar-nav">
+                        <div class="navbar-nav ms-3">
                             <a class="nav-link btn btn-outline-light px-3" href="{{ path('app_login') }}">
                                 <i class="fas fa-sign-in-alt me-2"></i> Connexion
                             </a>
@@ -104,7 +117,7 @@
                 </div>
             </div>
         </nav>
-        
+
         <div class="container">
             <div class="flash-messages my-3">
                 {% for label, messages in app.flashes %}
@@ -130,7 +143,7 @@
                                 {% endif %}
                                 <div>{{ message }}</div>
                             </div>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     {% endfor %}
                 {% endfor %}
@@ -138,7 +151,7 @@
 
             {% block body %}{% endblock %}
         </div>
-        
+
         <footer class="bg-primary text-white py-4 mt-5">
             <div class="container">
                 <div class="row">
