@@ -25,37 +25,30 @@
                                                 Période d'exportation
                                             </h5>
 
-                                            <div class="mb-5">
-                                                {{ form_row(exportForm.exportAll, {
-                                                    'attr': {'class': 'form-check-input me-3'},
-                                                    'label_attr': {'class': 'form-check-label fw-medium'}
-                                                }) }}
+                                            <!-- Radios en ligne -->
+                                            <div class="d-flex gap-4 align-items-center mb-3">
+                                                {{ form_widget(exportForm.exportAll[0], {'attr': {'class': 'form-check-input'}}) }}
+                                                {{ form_label(exportForm.exportAll[0], 'Toutes', {'label_attr': {'class': 'form-check-label'}}) }}
+
+                                                {{ form_widget(exportForm.exportAll[1], {'attr': {'class': 'form-check-input'}}) }}
+                                                {{ form_label(exportForm.exportAll[1], 'Période personnalisée', {'label_attr': {'class': 'form-check-label'}}) }}
                                             </div>
 
-                                            <div id="dateRange" class="mt-5">
-                                                <div class="row g-4">
-                                                    <div class="col-12">
-                                                        <div class="border-top pt-4 mb-4">
-                                                            <h6 class="text-muted mb-4">
-                                                                <i class="fas fa-clock me-2"></i>
-                                                                Sélectionnez la période
-                                                            </h6>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        {{ form_row(exportForm.dateMin, {
-                                                            'label': 'Date de début',
-                                                            'attr': {'class': 'form-control form-control-lg'},
-                                                            'label_attr': {'class': 'form-label mb-3'}
-                                                        }) }}
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        {{ form_row(exportForm.dateMax, {
-                                                            'label': 'Date de fin',
-                                                            'attr': {'class': 'form-control form-control-lg'},
-                                                            'label_attr': {'class': 'form-label mb-3'}
-                                                        }) }}
-                                                    </div>
+                                            <!-- Dates alignées -->
+                                            <div id="dateRange" class="row g-3 mt-2">
+                                                <div class="col-md-6">
+                                                    {{ form_row(exportForm.dateMin, {
+                                                        'label': 'Date de début',
+                                                        'attr': {'class': 'form-control form-control-lg'},
+                                                        'label_attr': {'class': 'form-label fw-semibold'}
+                                                    }) }}
+                                                </div>
+                                                <div class="col-md-6">
+                                                    {{ form_row(exportForm.dateMax, {
+                                                        'label': 'Date de fin',
+                                                        'attr': {'class': 'form-control form-control-lg'},
+                                                        'label_attr': {'class': 'form-label fw-semibold'}
+                                                    }) }}
                                                 </div>
                                             </div>
                                         </div>
@@ -113,43 +106,25 @@
     </div>
 
     {% block javascripts %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Chercher les bons noms de champs
-            const exportAllChoices = document.querySelectorAll('input[name*="exportAll"]');
-            const dateRange = document.getElementById('dateRange');
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const exportAllChoices = document.querySelectorAll('input[name*="exportAll"]');
+    const dateRange = document.getElementById('dateRange');
 
-            console.log('Found export choices:', exportAllChoices.length);
+    function toggleDateRange() {
+        const selectedChoice = document.querySelector('input[name*="exportAll"]:checked');
+        if (selectedChoice) {
+            const showDates = selectedChoice.value === 'false' || selectedChoice.value === '0' || selectedChoice.value === false;
+            dateRange.style.display = showDates ? 'flex' : 'none';
+        }
+    }
 
-            function toggleDateRange() {
-                const selectedChoice = document.querySelector('input[name*="exportAll"]:checked');
-                if (selectedChoice) {
-                    console.log('Selected value:', selectedChoice.value);
-                    // Afficher les dates si "Période personnalisée" est sélectionnée (valeur = false ou 0)
-                    const showDates = selectedChoice.value === 'false' || selectedChoice.value === '0' || selectedChoice.value === false;
-                    dateRange.style.display = showDates ? 'block' : 'none';
+    exportAllChoices.forEach(choice => {
+        choice.addEventListener('change', toggleDateRange);
+    });
 
-                    // Animation smooth
-                    if (showDates) {
-                        dateRange.style.opacity = '0';
-                        dateRange.style.transform = 'translateY(-10px)';
-                        setTimeout(() => {
-                            dateRange.style.transition = 'all 0.3s ease';
-                            dateRange.style.opacity = '1';
-                            dateRange.style.transform = 'translateY(0)';
-                        }, 10);
-                    }
-                }
-            }
-
-            exportAllChoices.forEach(choice => {
-                choice.addEventListener('change', toggleDateRange);
-                console.log('Choice value:', choice.value, 'Checked:', choice.checked);
-            });
-
-            // Initialiser l'affichage
-            toggleDateRange();
-        });
-    </script>
-    {% endblock %}
+    toggleDateRange();
+});
+</script>
+{% endblock %}
 {% endblock %}

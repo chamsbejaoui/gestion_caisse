@@ -4,10 +4,27 @@
 
 {% block body %}
 <div class="py-5">
+    <!-- Hero Section -->
+    <div class="hero-section text-center mb-5 py-5 bg-primary bg-opacity-10 rounded-4">
+        <img src="/images/progress-logo.svg" alt="Progress Engineering" class="mb-4" style="height: 80px;">
+        <h1 class="display-4 fw-bold text-primary mb-3">Système de Gestion de Caisse</h1>
+        <p class="lead mb-4">Une solution complète pour gérer efficacement vos finances</p>
+        {% if not app.user %}
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{{ path('app_login') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-sign-in-alt me-2"></i>Connexion
+                </a>
+                <a href="#features" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-info-circle me-2"></i>En savoir plus
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if app.user %}
     <!-- En-tête de bienvenue avec animation -->
-    <div class="welcome-section mb-5 text-center">
-        <h1 class="display-4 fw-bold text-primary mb-3">Bienvenue sur votre tableau de bord</h1>
-        <div class="d-flex justify-content-center align-items-center bg-light p-4 rounded-pill shadow-sm mx-auto" style="max-width: 500px;">
+    <div class="welcome-section mb-5">
+        <div class="d-flex justify-content-center align-items-center bg-white p-4 rounded-4 shadow-sm mx-auto" style="max-width: 600px;">
             <div class="bg-primary rounded-circle p-3 me-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
                 <i class="fas fa-user-circle fa-2x text-white"></i>
             </div>
@@ -17,7 +34,49 @@
             </div>
         </div>
     </div>
+    {% endif %}
+
+    <!-- Section Fonctionnalités -->
+    <div id="features" class="features-section mb-5">
+        <h2 class="text-center mb-4">Nos Fonctionnalités</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card border-0 rounded-4 shadow-sm h-100">
+                    <div class="card-body p-4 text-center">
+                        <div class="bg-primary bg-opacity-10 rounded-circle p-3 mx-auto mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-chart-line fa-2x text-primary"></i>
+                        </div>
+                        <h4>Suivi en Temps Réel</h4>
+                        <p class="text-muted">Surveillez vos dépenses et alimentations en temps réel avec des tableaux de bord intuitifs.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 rounded-4 shadow-sm h-100">
+                    <div class="card-body p-4 text-center">
+                        <div class="bg-success bg-opacity-10 rounded-circle p-3 mx-auto mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-shield-alt fa-2x text-success"></i>
+                        </div>
+                        <h4>Sécurité Maximale</h4>
+                        <p class="text-muted">Vos données financières sont protégées avec les plus hauts standards de sécurité.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 rounded-4 shadow-sm h-100">
+                    <div class="card-body p-4 text-center">
+                        <div class="bg-info bg-opacity-10 rounded-circle p-3 mx-auto mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-file-alt fa-2x text-info"></i>
+                        </div>
+                        <h4>Rapports Détaillés</h4>
+                        <p class="text-muted">Générez des rapports détaillés pour une meilleure analyse de vos finances.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     
+    {% if app.user %}
     <!-- Statistiques rapides -->    
     <div class="row mb-5 g-4">
         <div class="col-md-3">
@@ -81,7 +140,7 @@
     </div>
     
     <!-- Actions principales -->    
-    <div class="row g-4">
+    <div class="row g-4 mb-5">
         <div class="col-md-6">
             <div class="card border-0 rounded-4 shadow-sm h-100 hover-card">
                 <div class="card-body p-4">
@@ -126,8 +185,37 @@
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
+    {% endif %}
+
+    <!-- Section Contact -->
+    <div class="contact-section text-center py-5 bg-light rounded-4">
+        <h2 class="mb-4">Besoin d'aide ?</h2>
+        <p class="lead mb-4">Notre équipe est là pour vous accompagner dans la gestion de vos finances.</p>
+        <div class="row justify-content-center g-4">
+            <div class="col-md-4">
+                <div class="card border-0 rounded-4 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="bg-primary bg-opacity-10 rounded-circle p-3 mx-auto mb-3" style="width: 60px; height: 60px;">
+                            <i class="fas fa-envelope fa-lg text-primary"></i>
+                        </div>
+                        <h5>Email</h5>
+                        <p class="text-muted mb-0">support@progress-engineering.com</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 rounded-4 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="bg-primary bg-opacity-10 rounded-circle p-3 mx-auto mb-3" style="width: 60px; height: 60px;">
+                            <i class="fas fa-phone fa-lg text-primary"></i>
+                        </div>
+                        <h5>Téléphone</h5>
+                        <p class="text-muted mb-0">+216 71 234 567</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <style>
@@ -141,6 +229,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+.hero-section {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-info) 100%);
+    color: white;
+}
+.hero-section h1, .hero-section p {
+    color: white;
 }
 </style>
 {% endblock %}
